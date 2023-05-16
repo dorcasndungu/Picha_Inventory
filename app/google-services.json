@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "271362455641",
+    "project_id": "pichainventory",
+    "storage_bucket": "pichainventory.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:271362455641:android:075c6df1a5573f33a01948",
+        "android_client_info": {
+          "package_name": "com.example.pichainventory"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "271362455641-jpgo9vgesllf2sis361omti3i9g6l0sa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANvnT1WDxpar-wl82zHfkxvEKUaHLoHkA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "271362455641-jpgo9vgesllf2sis361omti3i9g6l0sa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
