@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/earthDark"
-    tools:context=".ui.UploadActivity">
+    tools:context=".ui_fragments.StcSelFragment">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
 
             <LinearLayout
@@ -35,125 +40,124 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
-                    android:text="Upload an item"
-                    android:textAlignment="viewStart"
+                    android:text="Sale"
+                    android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                     android:textColor="@color/earthGreen"
                     android:textSize="36sp"
                     android:textStyle="bold" />
 
-                <LinearLayout
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/profilePhoto"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_height="300dp"
+                    android:scaleType="centerCrop"
+                    app:shapeAppearanceOverlay="@style/roundedImage" />
 
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/profilePhoto"
-                        android:layout_width="match_parent"
-                        android:layout_height="300dp"
-                        android:scaleType="centerCrop"
-                        app:shapeAppearanceOverlay="@style/roundedImage" />
+                <!--        <ImageView
+                            android:id="@+id/addButton"
+                            android:layout_width="60dp"
+                            android:layout_marginStart="-60dp"
 
-                    <ImageView
-                        android:id="@+id/addButton"
-                        android:layout_width="60dp"
-                        android:layout_marginStart="-60dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_height="60dp"
+                            app:srcCompat="@drawable/ic_baseline_add_circle_24" />&ndash;&gt;
 
-                        android:layout_marginTop="5dp"
-                        android:layout_height="60dp"
-                        app:srcCompat="@drawable/ic_baseline_add_circle_24" />
-                </LinearLayout>
 
+                    -->         <TextView
+                android:id="@+id/itemLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="Item name"
+                android:textColor="@color/colorlessGrey"
+                android:textSize="26sp"
+                android:textStyle="bold" />
                 <TextView
-                    android:id="@+id/nameLabel"
+                    android:id="@+id/SellingPLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
-                    android:text="Item name"
-
-                    android:textColor="@color/earthGreen"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/nameEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-
-                    android:hint="White duvet 6x6"
-
-
-                    android:padding="10dp"
-                    android:textColor="@color/white"
-                    android:textColorHint="#52FFFFFF"
-                    android:textSize="16sp" />
-
-
-                <TextView
-                    android:id="@+id/BirthdayLabel"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Buying Price"
-                    android:textColor="@color/earthGreen"
-                    android:textSize="16sp"
-                    android:layout_margin="5dp"
-
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/BirthdayEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:inputType="number"
-                    android:hint="1800"
-                    android:padding="10dp"
-                    android:textColor="@color/white"
-                    android:textColorHint="#52FFFFFF"
-                    android:textSize="16sp" />
-                <TextView
-                    android:id="@+id/locationLabel"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:text="Selling Price"
-                    android:layout_margin="5dp"
                     android:textColor="@color/earthGreen"
                     android:textSize="16sp"
+
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/locationEditText"
+                    android:id="@+id/SellingPEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
+                    android:hint="1800"
                     android:inputType="number"
-                    android:hint="2500"
                     android:padding="10dp"
                     android:textColor="@color/white"
                     android:textColorHint="#52FFFFFF"
-                    android:textSize="16sp"
-                    />
-
+                    android:textSize="16sp" />
                 <TextView
-                    android:id="@+id/MyStoryLabel"
+                    android:id="@+id/UnitLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Additional info"
                     android:layout_margin="5dp"
+                    android:text="Units"
+                    android:textColor="@color/earthGreen"
+                    android:textSize="16sp"
+
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/UnitEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:hint="2"
+                    android:inputType="number"
+                    android:padding="10dp"
+                    android:textColor="@color/white"
+                    android:textColorHint="#52FFFFFF"
+                    android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/spinner_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mode of Payment:"
+                    android:layout_margin="5dp"
+                    android:textColor="@color/earthGreen"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"/>
+
+                <Spinner
+                    android:id="@+id/spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:spinnerMode="dropdown" />
+
+                <TextView
+                    android:id="@+id/AdditionalinfLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="Additional info"
                     android:textColor="@color/earthGreen"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/MyStoryEditText"
+                    android:id="@+id/AdditionalEdiText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:inputType="textMultiLine"
-
-                    android:gravity="start"
                     android:background="@drawable/fields_round_corner"
+                    android:gravity="start"
+                    android:hint="Promised would buy another one..."
+                    android:inputType="textMultiLine"
                     android:minHeight="100dp"
 
                     android:padding="10dp"
@@ -168,21 +172,17 @@
                     android:layout_height="wrap_content"
                     android:layout_above="@+id/buttonNext"
                     android:layout_marginStart="5dp"
-                    android:layout_marginTop="5dp"
-                    />
+                    android:layout_marginTop="5dp" />
 
                 <Button
                     android:id="@+id/buttonNext"
                     android:layout_width="320dp"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
                     android:layout_margin="5dp"
                     android:layout_marginTop="5dp"
-                    android:background="@drawable/green_button"
-                    android:text="UPLOAD"
-                    android:layout_gravity="center_horizontal"
-                    android:textColor="@color/earthDark"
+                    android:text="SAVE"
                     android:textStyle="bold" />
-
 
 
             </LinearLayout>
@@ -191,4 +191,6 @@
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</FrameLayout>

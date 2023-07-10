@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/earthDark"
+    tools:context=".ui_fragments.UploadFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_marginBottom="128dp"
+                android:orientation="vertical"
+                android:paddingHorizontal="30dp"
+                android:paddingBottom="30dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <TextView
+                    android:id="@+id/createH1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="Add item"
+                    android:gravity="center_horizontal"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                    android:textColor="@color/earthGreen"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/profilePhoto"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/placeholder"
+                    app:shapeAppearanceOverlay="@style/roundedImage" />
+
+                <!--        <ImageView
+                            android:id="@+id/addButton"
+                            android:layout_width="60dp"
+                            android:layout_marginStart="-60dp"
+
+                            android:layout_marginTop="5dp"
+                            android:layout_height="60dp"
+                            app:srcCompat="@drawable/ic_baseline_add_circle_24" />&ndash;&gt;
+
+
+                    --><TextView
+                android:id="@+id/nameLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="Item name"
+
+                android:textColor="@color/earthGreen"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/nameEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+
+                    android:hint="White duvet 6x6"
+
+
+                    android:padding="10dp"
+                    android:textColor="@color/white"
+                    android:textColorHint="#52FFFFFF"
+                    android:textSize="16sp" />
+
+
+                <TextView
+                    android:id="@+id/BuyingPLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Buying Price"
+                    android:textColor="@color/earthGreen"
+                    android:textSize="16sp"
+                    android:layout_margin="5dp"
+
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/BuyingPEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:inputType="number"
+                    android:hint="1800"
+                    android:padding="10dp"
+                    android:textColor="@color/white"
+                    android:textColorHint="#52FFFFFF"
+                    android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/SellingPLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Selling Price"
+                    android:layout_margin="5dp"
+                    android:textColor="@color/earthGreen"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/SellingPEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:inputType="number"
+                    android:hint="2500"
+                    android:padding="10dp"
+                    android:textColor="@color/white"
+                    android:textColorHint="#52FFFFFF"
+                    android:textSize="16sp"
+                    />
+                <TextView
+                    android:id="@+id/unitsLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Units"
+                    android:layout_margin="5dp"
+                    android:textColor="@color/earthGreen"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/unitsEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:inputType="number"
+                    android:hint="2"
+                    android:padding="10dp"
+                    android:textColor="@color/white"
+                    android:textColorHint="#52FFFFFF"
+                    android:textSize="16sp"
+                    />
+                <TextView
+                    android:id="@+id/text_view_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select a category:"
+                    android:layout_margin="5dp"
+                    android:textColor="@color/earthGreen"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"/>
+
+                <Spinner
+                    android:id="@+id/spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_below="@id/text_view_label"
+                    android:spinnerMode="dropdown" />
+                <TextView
+                    android:id="@+id/AdditionalInfoLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Additional info"
+                    android:layout_margin="5dp"
+                    android:textColor="@color/earthGreen"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/AdditionalEdiText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:inputType="textMultiLine"
+                    android:hint="Type e.g.bedding,flowers,baby,innerwear,socks,nets,sunglasses,marvin,jewellery,crocs,bags,towels,cushions,headgears"
+                    android:gravity="start"
+                    android:background="@drawable/fields_round_corner"
+                    android:minHeight="100dp"
+
+                    android:padding="10dp"
+                    android:textColor="@color/white"
+                    android:textColorHint="#52FFFFFF"
+                    android:textSize="16sp" />
+
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/buttonNext"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    />
+
+                <Button
+                    android:id="@+id/buttonNext"
+                    android:layout_width="320dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_marginTop="5dp"
+                    android:text="UPLOAD"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/earthDark"
+                    android:textStyle="bold" />
+
+
+
+            </LinearLayout>
+
+        </ScrollView>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>
