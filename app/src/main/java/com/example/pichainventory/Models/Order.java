@@ -14,18 +14,21 @@ public class Order {
     private String mDate;
     private String mAddInfo;
     private boolean mBrought;
+    private String mKey;
 
-    public Order(String mName, String mImageUrl, String mDesc, String mCont, int mUnits, String mCategory, Date mDate, String mAddInfo, boolean mBrought) {
+    public Order(String mName, String mImageUrl, String mDesc, String mCont, int mUnits, String mCategory, Date mDate, String mAddInfo, boolean mBrought, String mKey) {
         this.mName = mName;
         this.mImageUrl = mImageUrl;
         this.mDesc = mDesc;
         this.mCont = mCont;
         this.mUnits = mUnits;
         this.mCategory = mCategory;
-        this.mDate = formatDate(mDate);
+        this.mDate = formatDate(mDate); // Format the date without time
         this.mAddInfo = mAddInfo;
         this.mBrought = mBrought;
+        this.mKey = mKey;
     }
+
     public Order() {
         //empty constructor needed
     }
@@ -103,5 +106,13 @@ public class Order {
 
     public void setmBrought(boolean mBrought) {
         this.mBrought = mBrought;
+    }
+
+    public String getmKey() {
+        return mKey;
+    }
+
+    public void setmKey(String mKey) {
+        this.mKey = mKey;
     }
 }

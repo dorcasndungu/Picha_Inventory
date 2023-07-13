@@ -93,6 +93,7 @@ public class SalesRecAdapter extends RecyclerView.Adapter<SalesRecAdapter.ViewHo
                     }
                 }
             });
+
         }
         public void bind(Sale sale) {
             nameTextView.setText(sale.getmName());
@@ -106,6 +107,7 @@ public class SalesRecAdapter extends RecyclerView.Adapter<SalesRecAdapter.ViewHo
                     .into(profilePhoto);
         }
     }
+
     public void filterSales(List<Sale> filteredSales) {
         salesList.clear();
         salesList.addAll(filteredSales);

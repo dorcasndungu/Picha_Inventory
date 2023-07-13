@@ -14,11 +14,12 @@ public class Upload {
     private String mCategory;
     private String mDate;
     private String mAddInfo;
+    private String mKey;
 
     public Upload() {
         //empty constructor needed
     }
-    public Upload(String mName, String mImageUrl, int mBp, int mSp, int mUnits, String mCategory, Date mDate, String mAddInfo) {
+    public Upload(String mName, String mImageUrl, int mBp, int mSp, int mUnits, String mCategory, Date mDate, String mAddInfo, String mKey) {
 //        if (mName.trim().equals("")) {
 //            mName = "No Name";
 //        }
@@ -30,6 +31,7 @@ public class Upload {
         this.mCategory = mCategory;
         this.mDate = formatDate(mDate); // Format the date without time
         this.mAddInfo = mAddInfo;
+        this.mKey = mKey;
     }
 
     private String formatDate(Date date) {
@@ -99,5 +101,13 @@ public class Upload {
 
     public void setmAddInfo(String mAddInfo) {
         this.mAddInfo = mAddInfo;
+    }
+
+    public String getmKey() {
+        return mKey;
+    }
+
+    public void setmKey(String mKey) {
+        this.mKey = mKey;
     }
 }

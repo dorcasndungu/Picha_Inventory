@@ -32,6 +32,7 @@ public class StcOrdFragment extends Fragment {
     FragmentStcordBinding binding;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
+
     public String ItemName;
     public String ImageUrl;
     public String Category;
@@ -83,6 +84,7 @@ public class StcOrdFragment extends Fragment {
 
             }
         });
+
         return rootView;
     }
 
@@ -116,9 +118,10 @@ public class StcOrdFragment extends Fragment {
     private void uploadFile() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         String currentDate = dateFormat.format(new Date());
+        String uploadId = mDatabaseRef.child(currentDate).child(Category).push().getKey();
 
         // Create an instance of sale with the retrieved data
-        Order order= new Order(ItemName, ImageUrl, binding.DescEditText.getText().toString(), binding.ContactEditText.getText().toString(),Integer.parseInt(binding.UnitEditText.getText().toString()), Category, new Date(), binding.AdditionalEdiText.getText().toString(), false);
+        Order order= new Order(ItemName, ImageUrl, binding.DescEditText.getText().toString(), binding.ContactEditText.getText().toString(),Integer.parseInt(binding.UnitEditText.getText().toString()), Category, new Date(), binding.AdditionalEdiText.getText().toString(), false,uploadId);
 
         // Disable the button and show the progress bar
         binding.buttonNext.setEnabled(false);
@@ -128,7 +131,6 @@ public class StcOrdFragment extends Fragment {
         Toast.makeText(getContext(), "Uploading data. Please wait...", Toast.LENGTH_SHORT).show();
 
         // Upload the data to the Firebase Realtime Database
-        String uploadId = mDatabaseRef.child(currentDate).child(Category).push().getKey();
         mDatabaseRef.child(currentDate).child(Category).child(uploadId).setValue(order)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

@@ -11,7 +11,10 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+        <!-- background -->
+    </style>
+    <style name="Theme.Pichainventory.backG" >
+    <item name="android:windowBackground">@drawable/background</item>
     </style>
     <style name="roundedImage" parent="">
         <item name="cornerFamily">rounded</item>

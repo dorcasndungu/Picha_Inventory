@@ -25,6 +25,7 @@ import com.example.pichainventory.SearchableFragment;
 import com.example.pichainventory.adapters.OrderAdapter;
 import com.example.pichainventory.databinding.FragmentOrdRecBinding;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.github.clans.fab.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -402,7 +403,8 @@ public class OrdRecFragment extends Fragment implements OrderAdapter.OnItemClick
         TextView contactText = dialogView.findViewById(R.id.ContactTextView);
         TextView UnitsText = dialogView.findViewById(R.id.UnitTextView);
         Button backButton= dialogView.findViewById(R.id.buttonBack);
-
+        FloatingActionButton editBtn=dialogView.findViewById(R.id.editButton);
+        FloatingActionButton deleteBtn=dialogView.findViewById(R.id.deleteButton);
         // Retrieve data from the Bundle
         String itemName = bundle.getString("itemName");
         String imageUrl = bundle.getString("imageUrl");

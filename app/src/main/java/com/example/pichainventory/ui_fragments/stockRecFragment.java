@@ -1,6 +1,7 @@
 package com.example.pichainventory.ui_fragments;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -8,7 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +31,9 @@ import com.example.pichainventory.databinding.FragmentStockRecBinding;
 import com.example.pichainventory.ui_fragments.StcOrdFragment;
 import com.example.pichainventory.ui_fragments.StcSelFragment;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.github.clans.fab.FloatingActionButton;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -42,8 +48,10 @@ import java.util.Map;
 
 public class stockRecFragment extends Fragment implements StockAdapter.OnItemClickListener, SearchableFragment {
     private FragmentStockRecBinding binding;
-    private DatabaseReference tDatabaseRef;
+
+    private AlertDialog parentDialog;
     private String searchQuery = "";
+    private DatabaseReference tDatabaseRef;
     private DatabaseReference bDatabaseRef;
     private DatabaseReference shDatabaseRef;
     private DatabaseReference btDatabaseRef;
@@ -70,7 +78,6 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
     private Map<String, Boolean> sectionVisibilityMap;
     private Map<String, ImageView> sectionArrowIconMap;
     private Map<String, RecyclerView> sectionRecyclerViewMap;
-
     public stockRecFragment() {
         // Required empty public constructor
     }
@@ -401,11 +408,6 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
     }
 
     private int getImageRotation(String imageUrl) {
-        // Retrieve the rotation angle from Firebase or any other source as per your image data structure
-        // For example, if the rotation angle is stored in the "rotation" field of the image data:
-        // int rotationAngle = imageData.getRotation();
-
-        // Assume a fixed rotation angle of 0 for demonstration purposes
         int rotationAngle = 0;
 
         return rotationAngle;
@@ -424,7 +426,8 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
         TextView UnitEditText = dialogView.findViewById(R.id.UnitEditText);
         Button sellBtn=dialogView.findViewById(R.id.buttonSell);
         Button OrdBtn=dialogView.findViewById(R.id.buttonOrder);
-
+        com.google.android.material.floatingactionbutton.FloatingActionButton delete = (com.google.android.material.floatingactionbutton.FloatingActionButton) dialogView.findViewById(R.id.deleteButton);
+        com.google.android.material.floatingactionbutton.FloatingActionButton edit = (com.google.android.material.floatingactionbutton.FloatingActionButton) dialogView.findViewById(R.id.editButton);
         // Retrieve data from the Bundle
         String itemName = bundle.getString("itemName");
         String buyingPrice = bundle.getString("buyingPrice");
@@ -451,8 +454,22 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
 
         // Create and show the dialog
         AlertDialog dialog = builder.create();
-        dialog.show();
+        LinearLayout parentLayout = dialogView.findViewById(R.id.stockLayout);
 
+        List<EditText> disabledEditTextList = new ArrayList<>();
+
+// Disable EditText fields
+        for (int i = 0; i < parentLayout.getChildCount(); i++) {
+            View childView = parentLayout.getChildAt(i);
+            if (childView instanceof EditText) {
+                EditText editText = (EditText) childView;
+                editText.setEnabled(false);
+                editText.setFocusable(false);
+                disabledEditTextList.add(editText);
+            }
+        }
+        dialog.show();
+        parentDialog=dialog;
         OrdBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -470,7 +487,59 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
                 dialog.dismiss();
             }
         });
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String itemKey = bundle.getString("mKey");
+                String category=bundle.getString("mCategory");
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Delete item")
+                        .setMessage("Are you sure you want to delete this item?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // The user wants to delete the item from Firebase
+                                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("uploads").child(category).child(itemKey);
+                                databaseReference.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        // Successfully deleted the item. You can show a message to the user.
+                                        Toast.makeText(getContext(), "Item deleted successfully", Toast.LENGTH_SHORT).show();
+                                        dialog.dismiss();
+                                        parentDialog.dismiss();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        // Failed to delete the item. You can show an error message to the user.
+                                        Toast.makeText(getContext(), "Failed to delete item: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
+            }
+        });
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (int i = 0; i < parentLayout.getChildCount(); i++) {
+                    View childView = parentLayout.getChildAt(i);
+                    if (childView instanceof EditText) {
+                        EditText editText = (EditText) childView;
+                        editText.setEnabled(true);
+                        editText.setFocusable(true);
+                        disabledEditTextList.add(editText);
+                    }
+                }
+                String updatedItemName = itemLabel.getText().toString();
+                String updatedBuyingPrice = buyingP.getText().toString();
+                String updatedSellingPrice = sellingPEditText.getText().toString();
+                String updatedAdditional = additionalEdiText.getText().toString();
+                String updatedUnits = UnitEditText.getText().toString();
 
+
+            }});
         sellBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -512,6 +581,7 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
         bundle.putString("additional", upload.getmAddInfo());
         bundle.putString("mCategory", upload.getmCategory());
         bundle.putString("mUnits", String.valueOf(upload.getmUnits()));
+        bundle.putString("mKey", upload.getmKey());
         showDialogWithItems(bundle);
     }
 

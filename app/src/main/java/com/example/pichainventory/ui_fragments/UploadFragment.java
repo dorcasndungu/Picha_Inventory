@@ -47,6 +47,7 @@ public class UploadFragment extends Fragment {
 
     FragmentUploadBinding binding;
     Uri sendUri;
+    String key="";
     private StorageTask mUploadTask;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
@@ -108,8 +109,6 @@ public class UploadFragment extends Fragment {
                         Uri uri=data.getData();
                         sendUri=uri;
                         Picasso.get().load(uri).into(binding.profilePhoto);
-
-
                     }
                 }
             });
@@ -207,7 +206,8 @@ public class UploadFragment extends Fragment {
                                                 @Override
                                                 public void onSuccess(Uri uri) {
                                                     String imageUrl = uri.toString();
-
+                                                    String selectedCategory = binding.spinner.getSelectedItem().toString();
+                                                    String uploadId = mDatabaseRef.child(selectedCategory).push().getKey();
                                                     Upload upload = new Upload(binding.nameEditText.getText().toString().trim(),
                                                             imageUrl,
                                                             Integer.parseInt(binding.BuyingPEditText.getText().toString().trim()),
@@ -215,10 +215,7 @@ public class UploadFragment extends Fragment {
                                                             Integer.parseInt(binding.unitsEditText.getText().toString().trim()),
                                                             binding.spinner.getSelectedItem().toString(),
                                                             new Date(),
-                                                            binding.AdditionalEdiText.getText().toString().trim());
-
-                                                    String selectedCategory = binding.spinner.getSelectedItem().toString();
-                                                    String uploadId = mDatabaseRef.child(selectedCategory).push().getKey();
+                                                            binding.AdditionalEdiText.getText().toString().trim(),uploadId);
                                                     mDatabaseRef.child(selectedCategory).child(uploadId).setValue(upload);
                                                 }
                                             }).addOnFailureListener(new OnFailureListener() {

@@ -4,9 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@color/earthDark">
+ >
 
     <LinearLayout
+        android:id="@+id/stockLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -20,7 +21,7 @@
             android:scaleType="centerCrop"
             app:shapeAppearanceOverlay="@style/roundedImage" />
 
-        <TextView
+        <EditText
             android:id="@+id/itemLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -40,7 +41,7 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <TextView
+        <EditText
             android:id="@+id/BuyingP"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -48,8 +49,6 @@
             android:padding="10dp"
             android:text="0"
             android:textStyle="bold"
-            android:textColor="@color/white"
-            android:textColorHint="#52FFFFFF"
             android:textSize="16sp" />
 
         <TextView
@@ -62,16 +61,13 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <TextView
+        <EditText
             android:id="@+id/SellingPEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:padding="10dp"
             android:text="0"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:textColorHint="#52FFFFFF"
             android:textSize="16sp"/>
 
         <TextView
@@ -84,7 +80,7 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <TextView
+        <EditText
             android:id="@+id/UnitEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -92,8 +88,6 @@
             android:padding="10dp"
             android:text="0"
             android:textStyle="bold"
-            android:textColor="@color/white"
-            android:textColorHint="#52FFFFFF"
             android:textSize="16sp"/>
 
         <TextView
@@ -106,7 +100,7 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <TextView
+        <EditText
             android:id="@+id/AdditionalEdiText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -140,6 +134,27 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/buttonSell" />
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/editButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:src="@android:drawable/ic_menu_edit"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:fabSize="mini"/>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/deleteButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="80dp"
+                android:src="@android:drawable/ic_menu_delete"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:fabSize="mini"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

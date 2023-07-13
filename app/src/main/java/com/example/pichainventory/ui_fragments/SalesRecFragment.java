@@ -216,15 +216,14 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
                     toySales = (int) dataSnapshot.getChildrenCount();
                     Sale sale = postSnapshot.getValue(Sale.class);
                     tSales.add(sale);
-
+                    tAdapter = new SalesRecAdapter(tSales, getContext());
+                    tAdapter.setOnItemClickListener(SalesRecFragment.this);
+                    toyProfit = tAdapter.getTotalProfit();
+                    toySp = tAdapter.getTotalSp();
+                    binding.toysRecycler.setAdapter(tAdapter);
+                    updateTotalDisplay();
                 }
 
-                tAdapter = new SalesRecAdapter(tSales, getContext());
-                tAdapter.setOnItemClickListener(SalesRecFragment.this);
-                toyProfit = tAdapter.getTotalProfit();
-                toySp = tAdapter.getTotalSp();
-                binding.toysRecycler.setAdapter(tAdapter);
-                updateTotalDisplay();
             }
 
 
@@ -249,15 +248,16 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Sale sale = postSnapshot.getValue(Sale.class);
                     newSales.add(sale);
+                    fSales.clear();
+                    fSales.addAll(newSales);
+                    fAdapter = new SalesRecAdapter(fSales, getContext());
+                    fAdapter.setOnItemClickListener(SalesRecFragment.this);
+                    flowerProfit = fAdapter.getTotalProfit();
+                    flowerSp = fAdapter.getTotalSp();
+                    binding.flowersRecycler.setAdapter(fAdapter);
+                    updateTotalDisplay();
                 }
-                fSales.clear();
-                fSales.addAll(newSales);
-                fAdapter = new SalesRecAdapter(fSales, getContext());
-                fAdapter.setOnItemClickListener(SalesRecFragment.this);
-                flowerProfit = fAdapter.getTotalProfit();
-                flowerSp = fAdapter.getTotalSp();
-                binding.flowersRecycler.setAdapter(fAdapter);
-                updateTotalDisplay();
+
             }
 
             @Override
@@ -280,14 +280,15 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Sale sale = postSnapshot.getValue(Sale.class);
                     bSales.add(sale);
+                    bAdapter = new SalesRecAdapter(bSales, getContext());
+                    bAdapter.setOnItemClickListener(SalesRecFragment.this);
+                    binding.beddingRecycler.setAdapter(bAdapter);
+                    beddingProfit = bAdapter.getTotalProfit();
+                    beddingSp = bAdapter.getTotalSp();
+                    updateTotalDisplay();
                 }
 
-                bAdapter = new SalesRecAdapter(bSales, getContext());
-                bAdapter.setOnItemClickListener(SalesRecFragment.this);
-                binding.beddingRecycler.setAdapter(bAdapter);
-                beddingProfit = bAdapter.getTotalProfit();
-                beddingSp = bAdapter.getTotalSp();
-                updateTotalDisplay();
+
             }
 
             @Override
@@ -310,14 +311,15 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Sale sale = postSnapshot.getValue(Sale.class);
                     shSales.add(sale);
+                    shAdapter = new SalesRecAdapter(shSales, getContext());
+                    shAdapter.setOnItemClickListener(SalesRecFragment.this);
+                    binding.shoesRecycler.setAdapter(shAdapter);
+                    shoesProfit = shAdapter.getTotalProfit();
+                    shoesSp = shAdapter.getTotalSp();
+                    updateTotalDisplay();
                 }
 
-                shAdapter = new SalesRecAdapter(shSales, getContext());
-                shAdapter.setOnItemClickListener(SalesRecFragment.this);
-                binding.shoesRecycler.setAdapter(shAdapter);
-                shoesProfit = shAdapter.getTotalProfit();
-                shoesSp = shAdapter.getTotalSp();
-                updateTotalDisplay();
+
             }
 
             @Override
@@ -340,14 +342,14 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Sale sale = postSnapshot.getValue(Sale.class);
                     btSales.add(sale);
+                    btAdapter = new SalesRecAdapter(btSales, getContext());
+                    btAdapter.setOnItemClickListener(SalesRecFragment.this);
+                    binding.beautyRecycler.setAdapter(btAdapter);
+                    beautyProfit = btAdapter.getTotalProfit();
+                    beautySp = btAdapter.getTotalSp();
+                    updateTotalDisplay();
                 }
 
-                btAdapter = new SalesRecAdapter(btSales, getContext());
-                btAdapter.setOnItemClickListener(SalesRecFragment.this);
-                binding.beautyRecycler.setAdapter(btAdapter);
-                beautyProfit = btAdapter.getTotalProfit();
-                beautySp = btAdapter.getTotalSp();
-                updateTotalDisplay();
             }
 
             @Override
@@ -370,14 +372,13 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Sale sale = postSnapshot.getValue(Sale.class);
                     clSales.add(sale);
+                    clAdapter = new SalesRecAdapter(clSales, getContext());
+                    clAdapter.setOnItemClickListener(SalesRecFragment.this);
+                    binding.clothesRecycler.setAdapter(clAdapter);
+                    clothesProfit = clAdapter.getTotalProfit();
+                    clothesSp = clAdapter.getTotalSp();
+                    updateTotalDisplay();
                 }
-
-                clAdapter = new SalesRecAdapter(clSales, getContext());
-                clAdapter.setOnItemClickListener(SalesRecFragment.this);
-                binding.clothesRecycler.setAdapter(clAdapter);
-                clothesProfit = clAdapter.getTotalProfit();
-                clothesSp = clAdapter.getTotalSp();
-                updateTotalDisplay();
             }
 
             @Override
@@ -400,14 +401,13 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Sale sale = postSnapshot.getValue(Sale.class);
                     decSales.add(sale);
+                    decAdapter = new SalesRecAdapter(decSales, getContext());
+                    decAdapter.setOnItemClickListener(SalesRecFragment.this);
+                    binding.decorRecycler.setAdapter(decAdapter);
+                    decorProfit = decAdapter.getTotalProfit();
+                    decorSp = decAdapter.getTotalSp();
+                    updateTotalDisplay();
                 }
-
-                decAdapter = new SalesRecAdapter(decSales, getContext());
-                decAdapter.setOnItemClickListener(SalesRecFragment.this);
-                binding.decorRecycler.setAdapter(decAdapter);
-                decorProfit = decAdapter.getTotalProfit();
-                decorSp = decAdapter.getTotalSp();
-                updateTotalDisplay();
             }
 
             @Override
@@ -430,14 +430,14 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Sale sale = postSnapshot.getValue(Sale.class);
                     othSales.add(sale);
+                    othAdapter = new SalesRecAdapter(othSales, getContext());
+                    othAdapter.setOnItemClickListener(SalesRecFragment.this);
+                    binding.otherRecycler.setAdapter(othAdapter);
+                    otherProfit = othAdapter.getTotalProfit();
+                    otherSp = othAdapter.getTotalSp();
+                    updateTotalDisplay();
                 }
 
-                othAdapter = new SalesRecAdapter(othSales, getContext());
-                othAdapter.setOnItemClickListener(SalesRecFragment.this);
-                binding.otherRecycler.setAdapter(othAdapter);
-                otherProfit = othAdapter.getTotalProfit();
-                otherSp = othAdapter.getTotalSp();
-                updateTotalDisplay();
             }
 
             @Override
