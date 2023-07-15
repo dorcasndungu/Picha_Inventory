@@ -2,7 +2,7 @@ package com.example.pichainventory.ui_fragments;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
-
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -19,13 +19,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pichainventory.Models.Order;
-import com.example.pichainventory.Models.Order;
 import com.example.pichainventory.R;
 import com.example.pichainventory.SearchableFragment;
 import com.example.pichainventory.adapters.OrderAdapter;
 import com.example.pichainventory.databinding.FragmentOrdRecBinding;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.github.clans.fab.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;

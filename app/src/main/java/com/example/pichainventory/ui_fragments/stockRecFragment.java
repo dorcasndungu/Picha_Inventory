@@ -523,21 +523,6 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                for (int i = 0; i < parentLayout.getChildCount(); i++) {
-                    View childView = parentLayout.getChildAt(i);
-                    if (childView instanceof EditText) {
-                        EditText editText = (EditText) childView;
-                        editText.setEnabled(true);
-                        editText.setFocusable(true);
-                        disabledEditTextList.add(editText);
-                    }
-                }
-                String updatedItemName = itemLabel.getText().toString();
-                String updatedBuyingPrice = buyingP.getText().toString();
-                String updatedSellingPrice = sellingPEditText.getText().toString();
-                String updatedAdditional = additionalEdiText.getText().toString();
-                String updatedUnits = UnitEditText.getText().toString();
-
 
             }});
         sellBtn.setOnClickListener(new View.OnClickListener() {
@@ -594,14 +579,14 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
 
     @Override
     public void resetData() {
-     tAdapter.resetData();
-     bAdapter.resetData();
-     shAdapter.resetData();
-     btAdapter.resetData();
-     clAdapter.resetData();
-     decAdapter.resetData();
-     othAdapter.resetData();
-     fAdapter.resetData();
+        tAdapter.resetData();
+        bAdapter.resetData();
+        shAdapter.resetData();
+        btAdapter.resetData();
+        clAdapter.resetData();
+        decAdapter.resetData();
+        othAdapter.resetData();
+        fAdapter.resetData();
     }
 
     private void filterItems() {

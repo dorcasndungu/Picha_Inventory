@@ -41,8 +41,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
         android:text="Item name"
-        android:textColor="@color/earthGreen"
         android:textSize="14sp"
+        android:textColor="@color/black"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@+id/sPtextView"
         app:layout_constraintTop_toBottomOf="@+id/sPtextView" />
@@ -54,8 +54,8 @@
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
         android:text="final sp"
-        android:textColor="@color/earthGreen"
-        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardView" />

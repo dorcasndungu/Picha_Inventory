@@ -18,11 +18,10 @@ import android.view.ViewGroup;
 
 import com.example.pichainventory.MyPagerAdapter;
 import com.example.pichainventory.R;
-import com.example.pichainventory.SearchableFragment;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.example.pichainventory.databinding.FragmentDisplayBoxBinding;
-import com.example.pichainventory.databinding.FragmentUploadBinding;
 import com.google.android.material.tabs.TabLayoutMediator;
-import androidx.appcompat.widget.Toolbar;
+
 
 public class DisplayBoxFragment extends Fragment {
 
@@ -39,7 +38,7 @@ public class DisplayBoxFragment extends Fragment {
         binding = FragmentDisplayBoxBinding.inflate(inflater, container, false);
         View rootView = binding.getRoot();
         setHasOptionsMenu(true);
-
+        FloatingActionButton add = rootView.findViewById(R.id.addButton);
         // Inflate the layout for this fragment
         pagerAdapter = new MyPagerAdapter(this);
         binding.viewPager.setAdapter(pagerAdapter);
@@ -57,7 +56,7 @@ public class DisplayBoxFragment extends Fragment {
                     break;
             }
         }).attach();
-        binding.button.setOnClickListener(new View.OnClickListener() {
+        add.setOnClickListener(new  View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 UploadFragment uploadFragment = new UploadFragment();
@@ -66,8 +65,7 @@ public class DisplayBoxFragment extends Fragment {
                 fragmentTransaction.replace(R.id.fragmentContainerView, uploadFragment);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
-            }
-        });
+            }});
         return rootView;
     }
     @Override

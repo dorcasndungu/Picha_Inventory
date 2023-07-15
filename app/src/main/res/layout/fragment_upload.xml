@@ -77,14 +77,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-
                     android:hint="White duvet 6x6"
-
-
                     android:padding="10dp"
-                    android:textColor="@color/white"
-                    android:textColorHint="#52FFFFFF"
-                    android:textSize="16sp" />
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/gray"
+                    android:textSize="14sp" />
 
 
                 <TextView
@@ -105,10 +102,9 @@
                     android:layout_marginStart="5dp"
                     android:inputType="number"
                     android:hint="1800"
-                    android:padding="10dp"
-                    android:textColor="@color/white"
-                    android:textColorHint="#52FFFFFF"
-                    android:textSize="16sp" />
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/gray"
+                    android:textSize="14sp" />
                 <TextView
                     android:id="@+id/SellingPLabel"
                     android:layout_width="match_parent"
@@ -127,8 +123,8 @@
                     android:inputType="number"
                     android:hint="2500"
                     android:padding="10dp"
-                    android:textColor="@color/white"
-                    android:textColorHint="#52FFFFFF"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/gray"
                     android:textSize="16sp"
                     />
                 <TextView
@@ -149,8 +145,8 @@
                     android:inputType="number"
                     android:hint="2"
                     android:padding="10dp"
-                    android:textColor="@color/white"
-                    android:textColorHint="#52FFFFFF"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/gray"
                     android:textSize="16sp"
                     />
                 <TextView
@@ -169,7 +165,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
-                    android:textColor="@color/white"
+                    android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_below="@id/text_view_label"
@@ -196,8 +192,8 @@
                     android:minHeight="100dp"
 
                     android:padding="10dp"
-                    android:textColor="@color/white"
-                    android:textColorHint="#52FFFFFF"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/gray"
                     android:textSize="16sp" />
 
                 <ProgressBar

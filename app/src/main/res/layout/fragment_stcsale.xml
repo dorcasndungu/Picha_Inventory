@@ -71,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:text="Item name"
-                android:textColor="@color/colorlessGrey"
+                android:textColor="@color/black"
                 android:textSize="26sp"
                 android:textStyle="bold" />
                 <TextView
@@ -93,8 +93,8 @@
                     android:hint="1800"
                     android:inputType="number"
                     android:padding="10dp"
-                    android:textColor="@color/white"
-                    android:textColorHint="#52FFFFFF"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/gray"
                     android:textSize="16sp" />
                 <TextView
                     android:id="@+id/UnitLabel"
@@ -115,8 +115,8 @@
                     android:hint="2"
                     android:inputType="number"
                     android:padding="10dp"
-                    android:textColor="@color/white"
-                    android:textColorHint="#52FFFFFF"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/gray"
                     android:textSize="16sp" />
                 <TextView
                     android:id="@+id/spinner_label"
@@ -134,7 +134,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:textColor="@color/white"
+                    android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:spinnerMode="dropdown" />
@@ -161,8 +161,8 @@
                     android:minHeight="100dp"
 
                     android:padding="10dp"
-                    android:textColor="@color/white"
-                    android:textColorHint="#52FFFFFF"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/gray"
                     android:textSize="16sp" />
 
                 <ProgressBar

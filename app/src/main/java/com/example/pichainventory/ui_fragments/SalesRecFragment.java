@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,11 +24,13 @@ import com.example.pichainventory.Models.Sale;
 import com.example.pichainventory.Models.Sale;
 import com.example.pichainventory.R;
 import com.example.pichainventory.Models.Sale;
+import com.example.pichainventory.SalesViewHolder;
 import com.example.pichainventory.SearchableFragment;
 import com.example.pichainventory.adapters.OrderAdapter;
 import com.example.pichainventory.adapters.SalesRecAdapter;
 import com.example.pichainventory.adapters.SalesRecAdapter;
 import com.example.pichainventory.databinding.FragmentSalesRecBinding;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,7 +47,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItemClickListener, SearchableFragment {
+public class SalesRecFragment extends Fragment implements SearchableFragment {
 
     private FragmentSalesRecBinding binding;
     private DatabaseReference tDatabaseRef;
@@ -203,29 +206,48 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
             }
         }, 1000);
         // Set up the FirebaseRecyclerAdapter
-        FirebaseRecyclerOptions<Sale> options =
+        FirebaseRecyclerOptions<Sale> toysOptions =
                 new FirebaseRecyclerOptions.Builder<Sale>()
                         .setQuery(tDatabaseRef, Sale.class)
                         .build();
 
-        tDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseRecyclerAdapter<Sale, SalesViewHolder> toysAdapter =
+                new FirebaseRecyclerAdapter<Sale, SalesViewHolder>(toysOptions) {
+                    @Override
+                    protected void onBindViewHolder(@NonNull SalesViewHolder holder, int position, @NonNull Sale model) {
+                        // Set data to your views for toys instance
+                    }
+
+                    @NonNull
+                    @Override
+                    public SalesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        // Create a new instance of the ViewHolder and return it.
+                        View view = LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.item, parent, false);
+                        return new SalesViewHolder(view);
+                    }
+                };
+
+        binding.toysRecycler.setAdapter(toysAdapter);
+        toysAdapter.startListening();
+
+        tDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                tSales.clear();
+                int toySales = (int) dataSnapshot.getChildrenCount();
+                int totalProfit = 0;
+                int totalSp = 0;
+
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    toySales = (int) dataSnapshot.getChildrenCount();
                     Sale sale = postSnapshot.getValue(Sale.class);
-                    tSales.add(sale);
-                    tAdapter = new SalesRecAdapter(tSales, getContext());
-                    tAdapter.setOnItemClickListener(SalesRecFragment.this);
-                    toyProfit = tAdapter.getTotalProfit();
-                    toySp = tAdapter.getTotalSp();
-                    binding.toysRecycler.setAdapter(tAdapter);
-                    updateTotalDisplay();
+                    totalProfit += sale.getmProfit();
+                    totalSp += sale.getmSp();
                 }
 
+                toyProfit = totalProfit;
+                toySp = totalSp;
+                updateTotalDisplay();
             }
-
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -233,31 +255,48 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
             }
         });
 
-
-        // Set up the FirebaseRecyclerAdapter
+// FirebaseRecyclerOptions and FirebaseRecyclerAdapter for flowers
         FirebaseRecyclerOptions<Sale> flowersOptions =
                 new FirebaseRecyclerOptions.Builder<Sale>()
                         .setQuery(fDatabaseRef, Sale.class)
                         .build();
 
+        FirebaseRecyclerAdapter<Sale, SalesViewHolder> flowersAdapter =
+                new FirebaseRecyclerAdapter<Sale, SalesViewHolder>(flowersOptions) {
+                    @Override
+                    protected void onBindViewHolder(@NonNull SalesViewHolder holder, int position, @NonNull Sale model) {
+                        // Set data to your views for flowers instance
+                    }
+
+                    @NonNull
+                    @Override
+                    public SalesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        // Create a new instance of the ViewHolder and return it.
+                        View view = LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.item, parent, false);
+                        return new SalesViewHolder(view);
+                    }
+                };
+
+        binding.flowersRecycler.setAdapter(flowersAdapter);
+        flowersAdapter.startListening();
+
         fDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                flowerSales = (int) dataSnapshot.getChildrenCount();
-                List<Sale> newSales = new ArrayList<>();
+                int flowerSales = (int) dataSnapshot.getChildrenCount();
+                int totalProfit = 0;
+                int totalSp = 0;
+
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Sale sale = postSnapshot.getValue(Sale.class);
-                    newSales.add(sale);
-                    fSales.clear();
-                    fSales.addAll(newSales);
-                    fAdapter = new SalesRecAdapter(fSales, getContext());
-                    fAdapter.setOnItemClickListener(SalesRecFragment.this);
-                    flowerProfit = fAdapter.getTotalProfit();
-                    flowerSp = fAdapter.getTotalSp();
-                    binding.flowersRecycler.setAdapter(fAdapter);
-                    updateTotalDisplay();
+                    totalProfit += sale.getmProfit();
+                    totalSp += sale.getmSp();
                 }
 
+                flowerProfit = totalProfit;
+                flowerSp = totalSp;
+                updateTotalDisplay();
             }
 
             @Override
@@ -266,29 +305,49 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
             }
         });
 
-        // Set up the beauty FirebaseRecyclerAdapter
+// Repeat the above code block for each instance with corresponding variable names
+// FirebaseRecyclerOptions and FirebaseRecyclerAdapter for bedding
         FirebaseRecyclerOptions<Sale> beddingOptions =
                 new FirebaseRecyclerOptions.Builder<Sale>()
                         .setQuery(bDatabaseRef, Sale.class)
                         .build();
 
+        FirebaseRecyclerAdapter<Sale, SalesViewHolder> beddingAdapter =
+                new FirebaseRecyclerAdapter<Sale, SalesViewHolder>(beddingOptions) {
+                    @Override
+                    protected void onBindViewHolder(@NonNull SalesViewHolder holder, int position, @NonNull Sale model) {
+                        // Set data to your views for bedding instance
+                    }
+
+                    @NonNull
+                    @Override
+                    public SalesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        // Create a new instance of the ViewHolder and return it.
+                        View view = LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.item, parent, false);
+                        return new SalesViewHolder(view);
+                    }
+                };
+
+        binding.beddingRecycler.setAdapter(beddingAdapter);
+        beddingAdapter.startListening();
+
         bDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                beddingSales = (int) dataSnapshot.getChildrenCount();
-                bSales.clear();
+                int beddingSales = (int) dataSnapshot.getChildrenCount();
+                int totalProfit = 0;
+                int totalSp = 0;
+
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Sale sale = postSnapshot.getValue(Sale.class);
-                    bSales.add(sale);
-                    bAdapter = new SalesRecAdapter(bSales, getContext());
-                    bAdapter.setOnItemClickListener(SalesRecFragment.this);
-                    binding.beddingRecycler.setAdapter(bAdapter);
-                    beddingProfit = bAdapter.getTotalProfit();
-                    beddingSp = bAdapter.getTotalSp();
-                    updateTotalDisplay();
+                    totalProfit += sale.getmProfit();
+                    totalSp += sale.getmSp();
                 }
 
-
+                beddingProfit = totalProfit;
+                beddingSp = totalSp;
+                updateTotalDisplay();
             }
 
             @Override
@@ -297,29 +356,49 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
             }
         });
 
-        // Set up the shoesRecyclerAdapter
+// Repeat the above code block for each instance with corresponding variable names
+// FirebaseRecyclerOptions and FirebaseRecyclerAdapter for shoes
         FirebaseRecyclerOptions<Sale> shoesOptions =
                 new FirebaseRecyclerOptions.Builder<Sale>()
                         .setQuery(shDatabaseRef, Sale.class)
                         .build();
 
+        FirebaseRecyclerAdapter<Sale, SalesViewHolder> shoesAdapter =
+                new FirebaseRecyclerAdapter<Sale, SalesViewHolder>(shoesOptions) {
+                    @Override
+                    protected void onBindViewHolder(@NonNull SalesViewHolder holder, int position, @NonNull Sale model) {
+                        // Set data to your views for shoes instance
+                    }
+
+                    @NonNull
+                    @Override
+                    public SalesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        // Create a new instance of the ViewHolder and return it.
+                        View view = LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.item, parent, false);
+                        return new SalesViewHolder(view);
+                    }
+                };
+
+        binding.shoesRecycler.setAdapter(shoesAdapter);
+        shoesAdapter.startListening();
+
         shDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                shoesSales = (int) dataSnapshot.getChildrenCount();
-                shSales.clear();
+                int shoesSales = (int) dataSnapshot.getChildrenCount();
+                int totalProfit = 0;
+                int totalSp = 0;
+
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Sale sale = postSnapshot.getValue(Sale.class);
-                    shSales.add(sale);
-                    shAdapter = new SalesRecAdapter(shSales, getContext());
-                    shAdapter.setOnItemClickListener(SalesRecFragment.this);
-                    binding.shoesRecycler.setAdapter(shAdapter);
-                    shoesProfit = shAdapter.getTotalProfit();
-                    shoesSp = shAdapter.getTotalSp();
-                    updateTotalDisplay();
+                    totalProfit += sale.getmProfit();
+                    totalSp += sale.getmSp();
                 }
 
-
+                shoesProfit = totalProfit;
+                shoesSp = totalSp;
+                updateTotalDisplay();
             }
 
             @Override
@@ -328,28 +407,49 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
             }
         });
 
-        // Set up the FirebaseRecyclerAdapter
+// Repeat the above code block for each instance with corresponding variable names
+// FirebaseRecyclerOptions and FirebaseRecyclerAdapter for beauty
         FirebaseRecyclerOptions<Sale> beautyOptions =
                 new FirebaseRecyclerOptions.Builder<Sale>()
                         .setQuery(btDatabaseRef, Sale.class)
                         .build();
 
+        FirebaseRecyclerAdapter<Sale, SalesViewHolder> beautyAdapter =
+                new FirebaseRecyclerAdapter<Sale, SalesViewHolder>(beautyOptions) {
+                    @Override
+                    protected void onBindViewHolder(@NonNull SalesViewHolder holder, int position, @NonNull Sale model) {
+                        // Set data to your views for beauty instance
+                    }
+
+                    @NonNull
+                    @Override
+                    public SalesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        // Create a new instance of the ViewHolder and return it.
+                        View view = LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.item, parent, false);
+                        return new SalesViewHolder(view);
+                    }
+                };
+
+        binding.beautyRecycler.setAdapter(beautyAdapter);
+        beautyAdapter.startListening();
+
         btDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                beautySales = (int) dataSnapshot.getChildrenCount();
-                btSales.clear();
+                int beautySales = (int) dataSnapshot.getChildrenCount();
+                int totalProfit = 0;
+                int totalSp = 0;
+
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Sale sale = postSnapshot.getValue(Sale.class);
-                    btSales.add(sale);
-                    btAdapter = new SalesRecAdapter(btSales, getContext());
-                    btAdapter.setOnItemClickListener(SalesRecFragment.this);
-                    binding.beautyRecycler.setAdapter(btAdapter);
-                    beautyProfit = btAdapter.getTotalProfit();
-                    beautySp = btAdapter.getTotalSp();
-                    updateTotalDisplay();
+                    totalProfit += sale.getmProfit();
+                    totalSp += sale.getmSp();
                 }
 
+                beautyProfit = totalProfit;
+                beautySp = totalSp;
+                updateTotalDisplay();
             }
 
             @Override
@@ -358,27 +458,49 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
             }
         });
 
-        // Set up the FirebaseRecyclerAdapter
+// Repeat the above code block for each instance with corresponding variable names
+// FirebaseRecyclerOptions and FirebaseRecyclerAdapter for clothes
         FirebaseRecyclerOptions<Sale> clothesOptions =
                 new FirebaseRecyclerOptions.Builder<Sale>()
                         .setQuery(clDatabaseRef, Sale.class)
                         .build();
 
+        FirebaseRecyclerAdapter<Sale, SalesViewHolder> clothesAdapter =
+                new FirebaseRecyclerAdapter<Sale, SalesViewHolder>(clothesOptions) {
+                    @Override
+                    protected void onBindViewHolder(@NonNull SalesViewHolder holder, int position, @NonNull Sale model) {
+                        // Set data to your views for clothes instance
+                    }
+
+                    @NonNull
+                    @Override
+                    public SalesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        // Create a new instance of the ViewHolder and return it.
+                        View view = LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.item, parent, false);
+                        return new SalesViewHolder(view);
+                    }
+                };
+
+        binding.clothesRecycler.setAdapter(clothesAdapter);
+        clothesAdapter.startListening();
+
         clDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                clotheSales = (int) dataSnapshot.getChildrenCount();
-                clSales.clear();
+                int clothesSales = (int) dataSnapshot.getChildrenCount();
+                int totalProfit = 0;
+                int totalSp = 0;
+
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Sale sale = postSnapshot.getValue(Sale.class);
-                    clSales.add(sale);
-                    clAdapter = new SalesRecAdapter(clSales, getContext());
-                    clAdapter.setOnItemClickListener(SalesRecFragment.this);
-                    binding.clothesRecycler.setAdapter(clAdapter);
-                    clothesProfit = clAdapter.getTotalProfit();
-                    clothesSp = clAdapter.getTotalSp();
-                    updateTotalDisplay();
+                    totalProfit += sale.getmProfit();
+                    totalSp += sale.getmSp();
                 }
+
+                clothesProfit = totalProfit;
+                clothesSp = totalSp;
+                updateTotalDisplay();
             }
 
             @Override
@@ -387,27 +509,49 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
             }
         });
 
-        // Set up the FirebaseRecyclerAdapter
+// Repeat the above code block for each instance with corresponding variable names
+// FirebaseRecyclerOptions and FirebaseRecyclerAdapter for decor
         FirebaseRecyclerOptions<Sale> decorOptions =
                 new FirebaseRecyclerOptions.Builder<Sale>()
                         .setQuery(decDatabaseRef, Sale.class)
                         .build();
 
+        FirebaseRecyclerAdapter<Sale, SalesViewHolder> decorAdapter =
+                new FirebaseRecyclerAdapter<Sale, SalesViewHolder>(decorOptions) {
+                    @Override
+                    protected void onBindViewHolder(@NonNull SalesViewHolder holder, int position, @NonNull Sale model) {
+                        // Set data to your views for decor instance
+                    }
+
+                    @NonNull
+                    @Override
+                    public SalesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        // Create a new instance of the ViewHolder and return it.
+                        View view = LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.item, parent, false);
+                        return new SalesViewHolder(view);
+                    }
+                };
+
+        binding.decorRecycler.setAdapter(decorAdapter);
+        decorAdapter.startListening();
+
         decDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                decorSales = (int) dataSnapshot.getChildrenCount();
-                decSales.clear();
+                int decorSales = (int) dataSnapshot.getChildrenCount();
+                int totalProfit = 0;
+                int totalSp = 0;
+
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Sale sale = postSnapshot.getValue(Sale.class);
-                    decSales.add(sale);
-                    decAdapter = new SalesRecAdapter(decSales, getContext());
-                    decAdapter.setOnItemClickListener(SalesRecFragment.this);
-                    binding.decorRecycler.setAdapter(decAdapter);
-                    decorProfit = decAdapter.getTotalProfit();
-                    decorSp = decAdapter.getTotalSp();
-                    updateTotalDisplay();
+                    totalProfit += sale.getmProfit();
+                    totalSp += sale.getmSp();
                 }
+
+                decorProfit = totalProfit;
+                decorSp = totalSp;
+                updateTotalDisplay();
             }
 
             @Override
@@ -416,28 +560,49 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
             }
         });
 
-        // Set up the FirebaseRecyclerAdapter
+// Repeat the above code block for each instance with corresponding variable names
+// FirebaseRecyclerOptions and FirebaseRecyclerAdapter for other
         FirebaseRecyclerOptions<Sale> otherOptions =
                 new FirebaseRecyclerOptions.Builder<Sale>()
                         .setQuery(othDatabaseRef, Sale.class)
                         .build();
 
+        FirebaseRecyclerAdapter<Sale, SalesViewHolder> otherAdapter =
+                new FirebaseRecyclerAdapter<Sale, SalesViewHolder>(otherOptions) {
+                    @Override
+                    protected void onBindViewHolder(@NonNull SalesViewHolder holder, int position, @NonNull Sale model) {
+                        // Set data to your views for other instance
+                    }
+
+                    @NonNull
+                    @Override
+                    public SalesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        // Create a new instance of the ViewHolder and return it.
+                        View view = LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.item, parent, false);
+                        return new SalesViewHolder(view);
+                    }
+                };
+
+        binding.otherRecycler.setAdapter(otherAdapter);
+        otherAdapter.startListening();
+
         othDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                otherSales = (int) dataSnapshot.getChildrenCount();
-                othSales.clear();
+                int otherSales = (int) dataSnapshot.getChildrenCount();
+                int totalProfit = 0;
+                int totalSp = 0;
+
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Sale sale = postSnapshot.getValue(Sale.class);
-                    othSales.add(sale);
-                    othAdapter = new SalesRecAdapter(othSales, getContext());
-                    othAdapter.setOnItemClickListener(SalesRecFragment.this);
-                    binding.otherRecycler.setAdapter(othAdapter);
-                    otherProfit = othAdapter.getTotalProfit();
-                    otherSp = othAdapter.getTotalSp();
-                    updateTotalDisplay();
+                    totalProfit += sale.getmProfit();
+                    totalSp += sale.getmSp();
                 }
 
+                otherProfit = totalProfit;
+                otherSp = totalSp;
+                updateTotalDisplay();
             }
 
             @Override
@@ -523,17 +688,7 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
         });
     }
 
-    @Override
-    public void onItemClick(int position, Sale sale) {
-        Bundle bundle = new Bundle();
-        bundle.putString("itemName", sale.getmName());
-        bundle.putString("imageUrl", sale.getmImageUrl());
-        bundle.putString("sellingPrice", String.valueOf(sale.getmSp()));
-        bundle.putString("additional", sale.getmAddInfo());
-        bundle.putString("mCategory", sale.getmCategory());
-        bundle.putString("mUnits", String.valueOf(sale.getmUnits()));
-        showDialogWithItems(bundle);
-    }
+
 
     @Override
     public void performSearch(String query) {
@@ -543,88 +698,88 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
 
     @Override
     public void resetData() {
-        tAdapter.resetData();
-        bAdapter.resetData();
-        shAdapter.resetData();
-        btAdapter.resetData();
-        clAdapter.resetData();
-        decAdapter.resetData();
-        othAdapter.resetData();
-        fAdapter.resetData();
+//        tAdapter.resetData();
+//        bAdapter.resetData();
+//        shAdapter.resetData();
+//        btAdapter.resetData();
+//        clAdapter.resetData();
+//        decAdapter.resetData();
+//        othAdapter.resetData();
+//        fAdapter.resetData();
     }
     private void filterItems() {
-        // Perform filtering logic based on the search query
-
-        // Filter items for tAdapter
-        List<Sale> filteredTSales = new ArrayList<>();
-        for (Sale sale : tSales) {
-            if (sale.getmName().toLowerCase().contains(searchQuery.toLowerCase())) {
-                filteredTSales.add(sale);
-            }
-        }
-        tAdapter.filterSales(filteredTSales);
-
-        // Filter items for fAdapter
-        List<Sale> filteredFSales = new ArrayList<>();
-        for (Sale sale : fSales) {
-            if (sale.getmName().toLowerCase().contains(searchQuery.toLowerCase())) {
-                filteredFSales.add(sale);
-            }
-        }
-        fAdapter.filterSales(filteredFSales);
-
-        // Filter items for bAdapter
-        List<Sale> filteredBSales = new ArrayList<>();
-        for (Sale sale : bSales) {
-            if (sale.getmName().toLowerCase().contains(searchQuery.toLowerCase())) {
-                filteredBSales.add(sale);
-            }
-        }
-        bAdapter.filterSales(filteredBSales);
-
-        // Filter items for shAdapter
-        List<Sale> filteredShSales = new ArrayList<>();
-        for (Sale sale : shSales) {
-            if (sale.getmName().toLowerCase().contains(searchQuery.toLowerCase())) {
-                filteredShSales.add(sale);
-            }
-        }
-        shAdapter.filterSales(filteredShSales);
-
-        // Filter items for btAdapter
-        List<Sale> filteredBtSales = new ArrayList<>();
-        for (Sale sale : btSales) {
-            if (sale.getmName().toLowerCase().contains(searchQuery.toLowerCase())) {
-                filteredBtSales.add(sale);
-            }
-        }
-        btAdapter.filterSales(filteredBtSales);
-
-        // Filter items for clAdapter
-        List<Sale> filteredClSales = new ArrayList<>();
-        for (Sale sale : clSales) {
-            if (sale.getmName().toLowerCase().contains(searchQuery.toLowerCase())) {
-                filteredClSales.add(sale);
-            }
-        }
-        clAdapter.filterSales(filteredClSales);
-
-        // Filter items for decAdapter
-        List<Sale> filteredDecSales = new ArrayList<>();
-        for (Sale sale : decSales) {
-            if (sale.getmName().toLowerCase().contains(searchQuery.toLowerCase())) {
-                filteredDecSales.add(sale);
-            }
-        }
-        decAdapter.filterSales(filteredDecSales);
-
-        // Filter items for othAdapter
-        List<Sale> filteredOthSales = new ArrayList<>();
-        for (Sale sale : othSales) {
-            if (sale.getmName().toLowerCase().contains(searchQuery.toLowerCase())) {
-                filteredOthSales.add(sale);
-            }
-        }
-        othAdapter.filterSales(filteredOthSales);
+//        // Perform filtering logic based on the search query
+//
+//        // Filter items for tAdapter
+//        List<Sale> filteredTSales = new ArrayList<>();
+//        for (Sale sale : tSales) {
+//            if (sale.getmName().toLowerCase().contains(searchQuery.toLowerCase())) {
+//                filteredTSales.add(sale);
+//            }
+//        }
+//        tAdapter.filterSales(filteredTSales);
+//
+//        // Filter items for fAdapter
+//        List<Sale> filteredFSales = new ArrayList<>();
+//        for (Sale sale : fSales) {
+//            if (sale.getmName().toLowerCase().contains(searchQuery.toLowerCase())) {
+//                filteredFSales.add(sale);
+//            }
+//        }
+//        fAdapter.filterSales(filteredFSales);
+//
+//        // Filter items for bAdapter
+//        List<Sale> filteredBSales = new ArrayList<>();
+//        for (Sale sale : bSales) {
+//            if (sale.getmName().toLowerCase().contains(searchQuery.toLowerCase())) {
+//                filteredBSales.add(sale);
+//            }
+//        }
+//        bAdapter.filterSales(filteredBSales);
+//
+//        // Filter items for shAdapter
+//        List<Sale> filteredShSales = new ArrayList<>();
+//        for (Sale sale : shSales) {
+//            if (sale.getmName().toLowerCase().contains(searchQuery.toLowerCase())) {
+//                filteredShSales.add(sale);
+//            }
+//        }
+//        shAdapter.filterSales(filteredShSales);
+//
+//        // Filter items for btAdapter
+//        List<Sale> filteredBtSales = new ArrayList<>();
+//        for (Sale sale : btSales) {
+//            if (sale.getmName().toLowerCase().contains(searchQuery.toLowerCase())) {
+//                filteredBtSales.add(sale);
+//            }
+//        }
+//        btAdapter.filterSales(filteredBtSales);
+//
+//        // Filter items for clAdapter
+//        List<Sale> filteredClSales = new ArrayList<>();
+//        for (Sale sale : clSales) {
+//            if (sale.getmName().toLowerCase().contains(searchQuery.toLowerCase())) {
+//                filteredClSales.add(sale);
+//            }
+//        }
+//        clAdapter.filterSales(filteredClSales);
+//
+//        // Filter items for decAdapter
+//        List<Sale> filteredDecSales = new ArrayList<>();
+//        for (Sale sale : decSales) {
+//            if (sale.getmName().toLowerCase().contains(searchQuery.toLowerCase())) {
+//                filteredDecSales.add(sale);
+//            }
+//        }
+//        decAdapter.filterSales(filteredDecSales);
+//
+//        // Filter items for othAdapter
+//        List<Sale> filteredOthSales = new ArrayList<>();
+//        for (Sale sale : othSales) {
+//            if (sale.getmName().toLowerCase().contains(searchQuery.toLowerCase())) {
+//                filteredOthSales.add(sale);
+//            }
+//        }
+//        othAdapter.filterSales(filteredOthSales);
     }
 }
