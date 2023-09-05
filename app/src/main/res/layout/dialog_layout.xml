@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,8 +11,7 @@
         android:id="@+id/stockLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+        android:orientation="vertical">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/displayPhoto"
@@ -111,29 +111,49 @@
             android:textColorHint="#52FFFFFF"
             android:textSize="16sp" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:orientation="horizontal"
+            android:layout_height="wrap_content"
+            android:gravity="center">
 
             <Button
                 android:id="@+id/buttonSell"
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:text="SELL"
+                android:background="@drawable/fields_round_corner"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/buttonOrder"
-                app:layout_constraintStart_toStartOf="parent" />
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="0.1" />
+
+            <Button
+                android:id="@+id/buttonSave"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SAVE"
+                android:visibility="gone"
+                android:layout_weight="0.1"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/fields_round_corner"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/buttonOrder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="68dp"
                 android:text="ORDER"
+                android:background="@drawable/fields_round_corner"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/buttonSell" />
+                android:layout_marginEnd="8dp"
+                android:layout_weight="0.1" />
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/editButton"
                 android:layout_width="wrap_content"
@@ -141,9 +161,9 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:src="@android:drawable/ic_menu_edit"
+                app:fabSize="mini"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:fabSize="mini"/>
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/deleteButton"
@@ -152,11 +172,12 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="80dp"
                 android:src="@android:drawable/ic_menu_delete"
+                app:fabSize="mini"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:fabSize="mini"/>
+                app:layout_constraintEnd_toEndOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     </LinearLayout>
 </ScrollView>

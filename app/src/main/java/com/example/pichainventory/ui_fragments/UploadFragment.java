@@ -27,6 +27,8 @@ import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -62,10 +64,12 @@ public class UploadFragment extends Fragment {
                              Bundle savedInstanceState) {
         binding = FragmentUploadBinding.inflate(inflater, container, false);
         View rootView = binding.getRoot();
-
-        mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("uploads");
-        List<String> categories = Arrays.asList("Toys", "Flowers", "Bedding", "Shoes", "Beauty", "Clothes", "Decor", "Other");
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        assert user != null;
+        String uid =user.getUid();
+        mStorageRef = FirebaseStorage.getInstance().getReference(uid).child("uploads");
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("uploads");
+        List<String> categories = Arrays.asList("Toys", "Flowers", "Bedding", "Shoes", "Beauty", "Baby", "Clothes", "Decor", "Other");
 
         CategoryAdapter categoryAdapter = new CategoryAdapter(requireContext(), categories);
         binding.spinner.setAdapter(categoryAdapter);

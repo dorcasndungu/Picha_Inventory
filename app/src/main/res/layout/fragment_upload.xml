@@ -188,7 +188,7 @@
                     android:inputType="textMultiLine"
                     android:hint="Type e.g.bedding,flowers,baby,innerwear,socks,nets,sunglasses,marvin,jewellery,crocs,bags,towels,cushions,headgears"
                     android:gravity="start"
-                    android:background="@drawable/fields_round_corner"
+                    android:background="@color/gray"
                     android:minHeight="100dp"
 
                     android:padding="10dp"

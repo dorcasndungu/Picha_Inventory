@@ -16,8 +16,10 @@
             android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0">
 
 
             <LinearLayout
@@ -74,6 +76,7 @@
                 android:textColor="@color/black"
                 android:textSize="26sp"
                 android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/SellingPLabel"
                     android:layout_width="match_parent"
@@ -96,6 +99,7 @@
                     android:textColor="@color/black"
                     android:textColorHint="@color/gray"
                     android:textSize="16sp" />
+
                 <TextView
                     android:id="@+id/UnitLabel"
                     android:layout_width="match_parent"
@@ -118,26 +122,27 @@
                     android:textColor="@color/black"
                     android:textColorHint="@color/gray"
                     android:textSize="16sp" />
+
                 <TextView
                     android:id="@+id/spinner_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Mode of Payment:"
                     android:layout_margin="5dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Mode of Payment:"
                     android:textColor="@color/earthGreen"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp"/>
+                    android:textStyle="bold" />
 
                 <Spinner
                     android:id="@+id/spinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
+                    android:spinnerMode="dropdown"
                     android:textColor="@color/black"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:spinnerMode="dropdown" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/AdditionalinfLabel"
@@ -154,12 +159,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:background="@drawable/fields_round_corner"
+
                     android:gravity="start"
                     android:hint="Promised would buy another one..."
                     android:inputType="textMultiLine"
-                    android:minHeight="100dp"
-
+                    android:minHeight="30dp"
                     android:padding="10dp"
                     android:textColor="@color/black"
                     android:textColorHint="@color/gray"
@@ -181,6 +185,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_margin="5dp"
                     android:layout_marginTop="5dp"
+                    android:background="@drawable/fields_round_corner"
                     android:text="SAVE"
                     android:textStyle="bold" />
 

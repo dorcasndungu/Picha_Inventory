@@ -6,4 +6,11 @@
         android:title="Search item..."
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="ifRoom|collapseActionView" />
+
+    <item
+        android:id="@+id/account"
+        android:icon="@drawable/baseline_account_circle_24"
+        android:title="Account"
+        app:showAsAction="ifRoom|collapseActionView"
+        android:onClick="logout" />
 </menu>

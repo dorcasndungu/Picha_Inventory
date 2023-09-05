@@ -34,6 +34,8 @@ import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -51,6 +53,7 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
 
     private AlertDialog parentDialog;
     private String searchQuery = "";
+    private String uid;
     private DatabaseReference tDatabaseRef;
     private DatabaseReference bDatabaseRef;
     private DatabaseReference shDatabaseRef;
@@ -85,17 +88,19 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        assert user != null;
+        uid =user.getUid();
         // Initialize RecyclerView and ImageView maps
         // Initialize your DatabaseReference
-        tDatabaseRef = FirebaseDatabase.getInstance().getReference("uploads").child("Toys");
-        fDatabaseRef = FirebaseDatabase.getInstance().getReference("uploads").child("Flowers");
-        bDatabaseRef = FirebaseDatabase.getInstance().getReference("uploads").child("Bedding");
-        shDatabaseRef = FirebaseDatabase.getInstance().getReference("uploads").child("Shoes");
-        btDatabaseRef = FirebaseDatabase.getInstance().getReference("uploads").child("Beauty");
-        clDatabaseRef = FirebaseDatabase.getInstance().getReference("uploads").child("Clothes");
-        decDatabaseRef = FirebaseDatabase.getInstance().getReference("uploads").child("Decor");
-        othDatabaseRef = FirebaseDatabase.getInstance().getReference("uploads").child("Other");
+        tDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("uploads").child("Toys");
+        fDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("uploads").child("Flowers");
+        bDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("uploads").child("Bedding");
+        shDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("uploads").child("Shoes");
+        btDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("uploads").child("Beauty");
+        clDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("uploads").child("Clothes");
+        decDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("uploads").child("Decor");
+        othDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("uploads").child("Other");
     }
 
     @Override
@@ -426,6 +431,7 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
         TextView UnitEditText = dialogView.findViewById(R.id.UnitEditText);
         Button sellBtn=dialogView.findViewById(R.id.buttonSell);
         Button OrdBtn=dialogView.findViewById(R.id.buttonOrder);
+        Button saveBtn=dialogView.findViewById(R.id.buttonSave);
         com.google.android.material.floatingactionbutton.FloatingActionButton delete = (com.google.android.material.floatingactionbutton.FloatingActionButton) dialogView.findViewById(R.id.deleteButton);
         com.google.android.material.floatingactionbutton.FloatingActionButton edit = (com.google.android.material.floatingactionbutton.FloatingActionButton) dialogView.findViewById(R.id.editButton);
         // Retrieve data from the Bundle
@@ -458,13 +464,18 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
 
         List<EditText> disabledEditTextList = new ArrayList<>();
 
-// Disable EditText fields
         for (int i = 0; i < parentLayout.getChildCount(); i++) {
             View childView = parentLayout.getChildAt(i);
             if (childView instanceof EditText) {
                 EditText editText = (EditText) childView;
+
+                // Disable EditText
                 editText.setEnabled(false);
                 editText.setFocusable(false);
+
+                // Remove underline by setting background to null or transparent color
+                editText.setBackground(null); // or editText.setBackgroundColor(Color.TRANSPARENT);
+
                 disabledEditTextList.add(editText);
             }
         }
@@ -498,7 +509,7 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 // The user wants to delete the item from Firebase
-                                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("uploads").child(category).child(itemKey);
+                                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(uid).child("uploads").child(category).child(itemKey);
                                 databaseReference.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
@@ -523,7 +534,16 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                // Enable EditText fields for data entry
+                for (EditText editText : disabledEditTextList) {
+                    editText.setEnabled(true);
+                    editText.setFocusable(true);
+                    editText.setFocusableInTouchMode(true);
+                    editText.setBackgroundResource(android.R.drawable.divider_horizontal_dark);
+                }
+                sellBtn.setVisibility(View.GONE);
+                OrdBtn.setVisibility(View.GONE);
+                saveBtn.setVisibility(View.VISIBLE);
             }});
         sellBtn.setOnClickListener(new View.OnClickListener() {
             @Override

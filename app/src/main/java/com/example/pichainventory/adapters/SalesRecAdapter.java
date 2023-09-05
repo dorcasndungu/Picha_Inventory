@@ -1,5 +1,6 @@
 package com.example.pichainventory.adapters;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,39 +11,68 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pichainventory.Models.Sale;
 import com.example.pichainventory.R;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.squareup.picasso.Picasso;
 
-public class SalesRecAdapter extends FirebaseRecyclerAdapter<Sale, SalesRecAdapter.ViewHolder> {
+import java.util.ArrayList;
+import java.util.List;
+
+public class SalesRecAdapter extends RecyclerView.Adapter<SalesRecAdapter.ViewHolder> {
+
+    private List<Sale> salesList;
+    private List<Sale> originalSales;
+    private Context mContext;
+    private int totalProfit = 0;
+    private int totalSp= 0;
     private OnItemClickListener mListener;
 
     public interface OnItemClickListener {
-        void onItemClick(Sale sale);
+        void onItemClick(int position, Sale sale);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
         mListener = listener;
     }
 
-    public SalesRecAdapter(@NonNull FirebaseRecyclerOptions<Sale> options) {
-        super(options);
+    public SalesRecAdapter(List<Sale> sales, Context context) {
+        salesList = sales;
+        mContext = context;
+        this.originalSales = new ArrayList<>(sales);
+
+        // Calculate total profit and total SP
+        for (Sale sale : salesList) {
+            totalProfit += sale.getmProfit();
+            totalSp += sale.getmSp();
+        }
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.item, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull Sale model) {
-        holder.bind(model);
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Sale sale = salesList.get(position);
+        holder.bind(sale);
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    public int getTotalProfit() {
+        return totalProfit;
+    }
+
+    public int getTotalSp() {
+        return totalSp;
+    }
+
+    @Override
+    public int getItemCount() {
+        return salesList.size();
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
         TextView nameTextView;
         TextView sPtextView;
         ShapeableImageView profilePhoto;
@@ -56,11 +86,26 @@ public class SalesRecAdapter extends FirebaseRecyclerAdapter<Sale, SalesRecAdapt
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mListener != null) {
-                        mListener.onItemClick(getItem( getAbsoluteAdapterPosition()));
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION && mListener != null) {
+                        Sale sale = salesList.get(position);
+                        mListener.onItemClick(position, sale);
                     }
                 }
             });
+
+//            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+//                @Override
+//                public boolean onLongClick(View v) {
+//                    int position = getAdapterPosition();
+//                    if (position != RecyclerView.NO_POSITION && mListener != null) {
+//                        Sale sale = salesList.get(position);
+//                        mListener.onItemLongClick(position, sale);
+//                        return true;
+//                    }
+//                    return false;
+//                }
+//            });
         }
 
         public void bind(Sale sale) {
@@ -74,5 +119,20 @@ public class SalesRecAdapter extends FirebaseRecyclerAdapter<Sale, SalesRecAdapt
                     .centerCrop()
                     .into(profilePhoto);
         }
+    }
+
+    public void filterSales(List<Sale> filteredSales) {
+        salesList.clear();
+        salesList.addAll(filteredSales);
+        notifyDataSetChanged();
+    }
+
+    public void resetData() {
+        if (originalSales != null) {
+            this.salesList = new ArrayList<>(originalSales);
+        } else {
+            this.salesList = new ArrayList<>();
+        }
+        notifyDataSetChanged();
     }
 }
