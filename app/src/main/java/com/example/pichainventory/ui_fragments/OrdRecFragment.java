@@ -455,8 +455,20 @@ public class OrdRecFragment extends Fragment implements OrderAdapter.OnItemClick
 
     @Override
     public void performSearch(String query) {
-        searchQuery = query;
-        filterItems();
+        try {
+            if (query == null || query.trim().isEmpty()) {
+                // Show a message to the user indicating that the search query is empty
+                Toast.makeText(getContext(), "Please enter a valid search query.", Toast.LENGTH_SHORT).show();
+                return; // Exit the method to prevent further processing
+            }
+
+            searchQuery = query;
+            filterItems();
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Handle the exception gracefully, e.g., show an error message to the user
+            Toast.makeText(getContext(), "An error occurred during the search.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

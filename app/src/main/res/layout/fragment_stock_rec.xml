@@ -2,17 +2,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
 
     tools:context=".ui_fragments.stockRecFragment">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -295,7 +296,7 @@
 
                 </LinearLayout>
             </RelativeLayout>
-        </ScrollView>
+
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -305,7 +306,7 @@
             android:layout_centerInParent="true" />
     </RelativeLayout>
 
-
+    </ScrollView>
 
 
 </FrameLayout>

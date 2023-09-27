@@ -1,13 +1,21 @@
 package com.example.pichainventory.ui_fragments;
 
 import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -84,7 +92,26 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
     public stockRecFragment() {
         // Required empty public constructor
     }
-
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        }
+        return false;
+    }
+    private List<StockAdapter> getAllAdapters() {
+        List<StockAdapter> adapters = new ArrayList<>();
+        adapters.add(tAdapter);
+        adapters.add(bAdapter);
+        adapters.add(shAdapter);
+        adapters.add(btAdapter);
+        adapters.add(clAdapter);
+        adapters.add(decAdapter);
+        adapters.add(othAdapter);
+        adapters.add(fAdapter);
+        return adapters;
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,15 +139,38 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
         sectionArrowIconMap = new HashMap<>();
         sectionRecyclerViewMap = new HashMap<>();
 
-        setupSection("flowers", R.id.flowersRecycler, R.id.arrowIcon, rootView);
-        setupSection("toys", R.id.toysRecycler, R.id.TarrowIcon, rootView);
-        setupSection("decoration", R.id.decorRecycler, R.id.DarrowIcon, rootView);
-        setupSection("other", R.id.otherRecycler, R.id.OarrowIcon, rootView);
-        setupSection("bedding", R.id.beddingRecycler, R.id.BarrowIcon, rootView);
-        setupSection("shoes", R.id.shoesRecycler, R.id.SarrowIcon, rootView);
-        setupSection("beauty", R.id.beautyRecycler, R.id.BtarrowIcon, rootView);
-        setupSection("clothes", R.id.clothesRecycler, R.id.CarrowIcon, rootView);
+        if (!isNetworkAvailable()) {
+            // No internet connection, show a dialog to prompt the user to connect
+            showConnectToInternetDialog();
+        } else {
+            // Internet connection is available, proceed with your normal setup
+            setupSection("flowers", R.id.flowersRecycler, R.id.arrowIcon, rootView);
+            setupSection("toys", R.id.toysRecycler, R.id.TarrowIcon, rootView);
+            setupSection("decoration", R.id.decorRecycler, R.id.DarrowIcon, rootView);
+            setupSection("other", R.id.otherRecycler, R.id.OarrowIcon, rootView);
+            setupSection("bedding", R.id.beddingRecycler, R.id.BarrowIcon, rootView);
+            setupSection("shoes", R.id.shoesRecycler, R.id.SarrowIcon, rootView);
+            setupSection("beauty", R.id.beautyRecycler, R.id.BtarrowIcon, rootView);
+            setupSection("clothes", R.id.clothesRecycler, R.id.CarrowIcon, rootView);
+        }
+
         return rootView;
+    }
+    private void showConnectToInternetDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("No Internet Connection");
+        builder.setMessage("Please connect to the internet to use this app.");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Open mobile data settings
+                Intent intent = new Intent();
+                intent.setComponent(new ComponentName("com.android.settings", "com.android.settings.Settings$DataUsageSummaryActivity"));
+                startActivity(intent);
+            }
+        });
+        builder.setCancelable(false);
+        builder.show();
     }
 
     private void setupSection(final String sectionName, int recyclerViewId, int arrowIconId, View rootView) {
@@ -434,6 +484,7 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
         Button saveBtn=dialogView.findViewById(R.id.buttonSave);
         com.google.android.material.floatingactionbutton.FloatingActionButton delete = (com.google.android.material.floatingactionbutton.FloatingActionButton) dialogView.findViewById(R.id.deleteButton);
         com.google.android.material.floatingactionbutton.FloatingActionButton edit = (com.google.android.material.floatingactionbutton.FloatingActionButton) dialogView.findViewById(R.id.editButton);
+        
         // Retrieve data from the Bundle
         String itemName = bundle.getString("itemName");
         String buyingPrice = bundle.getString("buyingPrice");
@@ -461,7 +512,7 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
         // Create and show the dialog
         AlertDialog dialog = builder.create();
         LinearLayout parentLayout = dialogView.findViewById(R.id.stockLayout);
-
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         List<EditText> disabledEditTextList = new ArrayList<>();
 
         for (int i = 0; i < parentLayout.getChildCount(); i++) {
@@ -532,6 +583,35 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
             }
         });
         edit.setOnClickListener(new View.OnClickListener() {
+            private boolean validateInput() {
+                String itemName = itemLabel.getText().toString().trim();
+                String buyingPrice = buyingP.getText().toString().trim();
+                String sellingPrice = sellingPEditText.getText().toString().trim();
+                String units = UnitEditText.getText().toString().trim();
+                String additionalInfo=additionalEdiText.getText().toString().trim();
+
+                if (TextUtils.isEmpty(itemName)) {
+                    itemLabel.setError("Item name is required.");
+                    return false;
+                }
+
+                if (TextUtils.isEmpty(buyingPrice)) {
+                    buyingP.setError("Buying price is required.");
+                    return false;
+                }
+
+                if (TextUtils.isEmpty(sellingPrice)) {
+                    sellingPEditText.setError("Selling price is required.");
+                    return false;
+                }
+
+                if (TextUtils.isEmpty(units)) {
+                    UnitEditText.setError("Units are required.");
+                    return false;
+                }
+
+                return true;
+            }
             @Override
             public void onClick(View v) {
                 // Enable EditText fields for data entry
@@ -544,6 +624,51 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
                 sellBtn.setVisibility(View.GONE);
                 OrdBtn.setVisibility(View.GONE);
                 saveBtn.setVisibility(View.VISIBLE);
+
+                saveBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Validate user input
+                        if (validateInput()) {
+                            String itemKey = bundle.getString("mKey");
+                            String category=bundle.getString("mCategory");
+                            // Update the item data in the database with the new values
+                            DatabaseReference itemRef = FirebaseDatabase.getInstance().getReference(uid).child("uploads").child(category).child(itemKey);
+                            String itemName = itemLabel.getText().toString().trim();
+                            String buyingPrice = buyingP.getText().toString().trim();
+                            String sellingPrice = sellingPEditText.getText().toString().trim();
+                            int units = Integer.parseInt(UnitEditText.getText().toString().trim());
+                            String additionalInfo=additionalEdiText.getText().toString().trim();
+                            // Create a map to hold the updated data
+                            Map<String, Object> updateData = new HashMap<>();
+                            updateData.put("mName", itemName);
+                            updateData.put("mBuyingPrice", buyingPrice);
+                            updateData.put("mSellingPrice", sellingPrice);
+                            updateData.put("mUnits", units);
+                            updateData.put("mAdditionalInfo", additionalInfo);
+
+                            // Update the item data in the database
+                            itemRef.updateChildren(updateData)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // Data updated successfully
+                                            Toast.makeText(getContext(), "Item updated successfully", Toast.LENGTH_SHORT).show();
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            // Handle the error
+                                            Toast.makeText(getContext(), "Failed to update item: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
+                            // Hide the "SAVE" button
+                            saveBtn.setVisibility(View.GONE);
+                        }
+                    }
+                });
             }});
         sellBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -593,10 +718,35 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
 
     @Override
     public void performSearch(String query) {
-        searchQuery = query;
-        filterItems();
-    }
+        try {
+            if (query == null || query.trim().isEmpty()) {
+                // Show a message to the user indicating that the search query is empty
+                Toast.makeText(getContext(), "Please enter a valid search query.", Toast.LENGTH_SHORT).show();
+                return; // Exit the method to prevent further processing
+            }
 
+            searchQuery = query;
+            filterItems();
+
+            // Check if there are no matching items in any section
+            boolean noMatchingItems = true;
+            for (StockAdapter adapter : getAllAdapters()) {
+                if (adapter != null && adapter.getItemCount() > 0) {
+                    noMatchingItems = false;
+                    break; // Exit the loop if at least one section has matching items
+                }
+            }
+
+            if (noMatchingItems) {
+                // Show a message to the user indicating that no matching items were found
+                Toast.makeText(getContext(), "No matching items found.", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Handle the exception gracefully, e.g., show an error message to the user
+            Toast.makeText(getContext(), "An error occurred during the search.", Toast.LENGTH_SHORT).show();
+        }
+    }
     @Override
     public void resetData() {
         tAdapter.resetData();

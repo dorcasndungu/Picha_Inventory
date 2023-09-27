@@ -10,10 +10,10 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
 
 
             <LinearLayout
@@ -36,8 +36,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
-                    android:text="Add item"
                     android:gravity="center_horizontal"
+                    android:text="Add item"
                     android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                     android:textColor="@color/earthGreen"
                     android:textSize="20sp"
@@ -48,8 +48,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
                     android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/placeholder"
-                    app:shapeAppearanceOverlay="@style/roundedImage" />
+                    app:shapeAppearanceOverlay="@style/roundedImage"
+                    app:srcCompat="@drawable/placeholder" />
 
                 <!--        <ImageView
                             android:id="@+id/addButton"
@@ -88,10 +88,10 @@
                     android:id="@+id/BuyingPLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
                     android:text="Buying Price"
                     android:textColor="@color/earthGreen"
                     android:textSize="16sp"
-                    android:layout_margin="5dp"
 
                     android:textStyle="bold" />
 
@@ -100,17 +100,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:inputType="number"
                     android:hint="1800"
+                    android:inputType="number"
                     android:textColor="@color/black"
                     android:textColorHint="@color/gray"
                     android:textSize="14sp" />
+
                 <TextView
                     android:id="@+id/SellingPLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Selling Price"
                     android:layout_margin="5dp"
+                    android:text="Selling Price"
                     android:textColor="@color/earthGreen"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -120,19 +121,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:inputType="number"
                     android:hint="2500"
+                    android:inputType="number"
                     android:padding="10dp"
                     android:textColor="@color/black"
                     android:textColorHint="@color/gray"
-                    android:textSize="16sp"
-                    />
+                    android:textSize="16sp" />
+
                 <TextView
                     android:id="@+id/unitsLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Units"
                     android:layout_margin="5dp"
+                    android:text="Units"
                     android:textColor="@color/earthGreen"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -142,40 +143,41 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:inputType="number"
                     android:hint="2"
+                    android:inputType="number"
                     android:padding="10dp"
                     android:textColor="@color/black"
                     android:textColorHint="@color/gray"
-                    android:textSize="16sp"
-                    />
+                    android:textSize="16sp" />
+
                 <TextView
                     android:id="@+id/text_view_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Select a category:"
                     android:layout_margin="5dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Select a category:"
                     android:textColor="@color/earthGreen"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp"/>
+                    android:textStyle="bold" />
 
                 <Spinner
                     android:id="@+id/spinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@id/text_view_label"
                     android:layout_margin="5dp"
+                    android:spinnerMode="dropdown"
                     android:textColor="@color/black"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_below="@id/text_view_label"
-                    android:spinnerMode="dropdown" />
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/AdditionalInfoLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Additional info"
                     android:layout_margin="5dp"
+                    android:text="Additional info"
                     android:textColor="@color/earthGreen"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -185,10 +187,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
-                    android:inputType="textMultiLine"
-                    android:hint="Type e.g.bedding,flowers,baby,innerwear,socks,nets,sunglasses,marvin,jewellery,crocs,bags,towels,cushions,headgears"
-                    android:gravity="start"
                     android:background="@color/gray"
+                    android:gravity="start"
+                    android:hint="Type e.g.bedding,flowers,baby,innerwear,socks,nets,sunglasses,marvin,jewellery,crocs,bags,towels,cushions,headgears"
+                    android:inputType="textMultiLine"
                     android:minHeight="100dp"
 
                     android:padding="10dp"
@@ -203,20 +205,18 @@
                     android:layout_height="wrap_content"
                     android:layout_above="@+id/buttonNext"
                     android:layout_marginStart="5dp"
-                    android:layout_marginTop="5dp"
-                    />
+                    android:layout_marginTop="5dp" />
 
                 <Button
                     android:id="@+id/buttonNext"
                     android:layout_width="320dp"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
                     android:layout_margin="5dp"
                     android:layout_marginTop="5dp"
                     android:text="UPLOAD"
-                    android:layout_gravity="center_horizontal"
                     android:textColor="@color/earthDark"
                     android:textStyle="bold" />
-
 
 
             </LinearLayout>
