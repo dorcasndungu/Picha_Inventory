@@ -34,6 +34,7 @@ import com.example.pichainventory.databinding.FragmentSalesRecBinding;
 import com.example.pichainventory.ui.LoginActivity;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -110,6 +111,7 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
     public int totalProfit = 0;
     public int totalSp = 0;
     private String searchQuery = "";
+    String uid;
     public SalesRecFragment() {
         // Required empty public constructor
     }
@@ -119,14 +121,17 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
         super.onCreate(savedInstanceState);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         String currentDate = dateFormat.format(new Date());
-        tDatabaseRef = FirebaseDatabase.getInstance().getReference("sales").child(currentDate).child("Toys");
-        fDatabaseRef = FirebaseDatabase.getInstance().getReference("sales").child(currentDate).child("Flowers");
-        bDatabaseRef = FirebaseDatabase.getInstance().getReference("sales").child(currentDate).child("Bedding");
-        shDatabaseRef = FirebaseDatabase.getInstance().getReference("sales").child(currentDate).child("Shoes");
-        btDatabaseRef = FirebaseDatabase.getInstance().getReference("sales").child(currentDate).child("Beauty");
-        clDatabaseRef = FirebaseDatabase.getInstance().getReference("sales").child(currentDate).child("Clothes");
-        decDatabaseRef = FirebaseDatabase.getInstance().getReference("sales").child(currentDate).child("Decor");
-        othDatabaseRef = FirebaseDatabase.getInstance().getReference("sales").child(currentDate).child("Other");
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        assert user != null;
+        uid =user.getUid();
+        tDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("sales").child(currentDate).child("Toys");
+        fDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("sales").child(currentDate).child("Flowers");
+        bDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("sales").child(currentDate).child("Bedding");
+        shDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("sales").child(currentDate).child("Shoes");
+        btDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("sales").child(currentDate).child("Beauty");
+        clDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("sales").child(currentDate).child("Clothes");
+        decDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("sales").child(currentDate).child("Decor");
+        othDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("sales").child(currentDate).child("Other");
         mDate=currentDate;
 
     }
@@ -150,6 +155,54 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
         setupSection("clothes", R.id.clothesRecycler, R.id.CarrowIcon, rootView);
 
         return rootView;
+    }
+    // Add this method to calculate and update the highest profit and most sold categories
+    private void calculateHighestProfitAndMostSoldCategories() {
+        Map<String, Integer> categoryProfitMap = new HashMap<>();
+        Map<String, Integer> categorySalesMap = new HashMap<>();
+
+        // Calculate profit and sales for each category
+        categoryProfitMap.put("Toys", toyProfit);
+        categoryProfitMap.put("Flowers", flowerProfit);
+        categoryProfitMap.put("Bedding", beddingProfit);
+        categoryProfitMap.put("Shoes", shoesProfit);
+        categoryProfitMap.put("Beauty", beautyProfit);
+        categoryProfitMap.put("Clothes", clothesProfit);
+        categoryProfitMap.put("Decor", decorProfit);
+        categoryProfitMap.put("Other", otherProfit);
+
+        categorySalesMap.put("Toys", toySales);
+        categorySalesMap.put("Flowers", flowerSales);
+        categorySalesMap.put("Bedding", beddingSales);
+        categorySalesMap.put("Shoes", shoesSales);
+        categorySalesMap.put("Beauty", beautySales);
+        categorySalesMap.put("Clothes", clotheSales);
+        categorySalesMap.put("Decor", decorSales);
+        categorySalesMap.put("Other", otherSales);
+
+        // Find the category with the highest profit
+        int maxProfit = Integer.MIN_VALUE;
+        String highestProfitCategory = "";
+        for (Map.Entry<String, Integer> entry : categoryProfitMap.entrySet()) {
+            if (entry.getValue() > maxProfit) {
+                maxProfit = entry.getValue();
+                highestProfitCategory = entry.getKey();
+            }
+        }
+
+        // Find the category with the most sold items
+        int maxSales = Integer.MIN_VALUE;
+        String mostSoldCategory = "";
+        for (Map.Entry<String, Integer> entry : categorySalesMap.entrySet()) {
+            if (entry.getValue() > maxSales) {
+                maxSales = entry.getValue();
+                mostSoldCategory = entry.getKey();
+            }
+        }
+
+        // Update the UI with the highest profit and most sold categories
+        binding.highestPrft.setText("Most Profit: " + highestProfitCategory);
+        binding.highestSel.setText("Most Sold: " + mostSoldCategory);
     }
 
     private void setupSection(final String sectionName, int recyclerViewId, int arrowIconId, View rootView) {
@@ -450,6 +503,7 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
                 Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+        calculateHighestProfitAndMostSoldCategories();
     }
 
     private void updateTotalDisplay() {

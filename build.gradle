@@ -1,10 +1,22 @@
 buildscript {
-    dependencies {
-        classpath 'com.google.gms:google-services:4.3.15'
-
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
     }
-}// Top-level build file where you can add configuration options common to all sub-projects/modules.
-plugins {
-    id 'com.android.application' version '7.3.1' apply false
-    id 'com.android.library' version '7.3.1' apply false
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.3.1'
+        classpath 'com.google.gms:google-services:4.4.0'
+    }
+}
+
+// Apply the Android application or library plugin here if needed
+apply plugin: 'com.android.application' // or 'com.android.library' based on your project type
+
+// Add other configuration specific to your project if necessary
+
+dependencies {
+    // Add your other project dependencies here
+
+    implementation 'devs.mulham.horizontalcalendar:horizontalcalendar:1.3.4'
 }

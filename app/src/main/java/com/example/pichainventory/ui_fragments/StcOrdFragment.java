@@ -36,6 +36,7 @@ public class StcOrdFragment extends Fragment {
     public String ItemName;
     public String ImageUrl;
     public String Category;
+    public String uid;
     public StcOrdFragment() {
         // Required empty public constructor
     }
@@ -47,16 +48,12 @@ public class StcOrdFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentStcordBinding.inflate(inflater, container, false);
         View rootView = binding.getRoot();
-
-        mStorageRef = FirebaseStorage.getInstance().getReference("Orders");
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("Orders");
-
         Bundle args = getArguments();
         if (args != null) {
             String itemName = args.getString("itemName");
             String imageUrl = args.getString("imageUrl");
             String category = args.getString("category");
-
+            uid=args.getString("mUid");
             binding.nameLabel.setText(itemName);
 
             // Load the image using Picasso or any other image loading library
@@ -71,6 +68,10 @@ public class StcOrdFragment extends Fragment {
             ImageUrl=imageUrl;
             Category=category;
         }
+        mStorageRef = FirebaseStorage.getInstance().getReference(uid).child("Orders");
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("Orders");
+
+
         binding.buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,7 +119,7 @@ public class StcOrdFragment extends Fragment {
     private void uploadFile() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         String currentDate = dateFormat.format(new Date());
-        String uploadId = mDatabaseRef.child(currentDate).child(Category).push().getKey();
+        String uploadId = mDatabaseRef.child(Category).push().getKey();
 
         // Create an instance of sale with the retrieved data
         Order order= new Order(ItemName, ImageUrl, binding.DescEditText.getText().toString(), binding.ContactEditText.getText().toString(),Integer.parseInt(binding.UnitEditText.getText().toString()), Category, new Date(), binding.AdditionalEdiText.getText().toString(), false,uploadId);
@@ -131,7 +132,8 @@ public class StcOrdFragment extends Fragment {
         Toast.makeText(getContext(), "Uploading data. Please wait...", Toast.LENGTH_SHORT).show();
 
         // Upload the data to the Firebase Realtime Database
-        mDatabaseRef.child(currentDate).child(Category).child(uploadId).setValue(order)
+        // mDatabaseRef.child(currentDate).child(Category).child(uploadId).setValue(order)
+        mDatabaseRef.child(Category).child(uploadId).setValue(order)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

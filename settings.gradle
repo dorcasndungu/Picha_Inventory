@@ -3,6 +3,10 @@ pluginManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
+        maven {
+            url 'https://path/to/MavenRepo'
+            name 'Google'
+        }
     }
 }
 dependencyResolutionManagement {
@@ -11,9 +15,9 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         //for image picker
-        maven { url "https://jitpack.io" }
+        maven { url 'https://jitpack.io' }
     }
     }
 
 rootProject.name = "Pichainventory"
-include ':app'
+include ':app', ':horizontalcalendar'

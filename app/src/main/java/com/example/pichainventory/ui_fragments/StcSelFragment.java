@@ -26,8 +26,10 @@ import com.squareup.picasso.Picasso;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 
 public class StcSelFragment extends Fragment {
@@ -39,7 +41,10 @@ FragmentStcsaleBinding binding;
     public String ImageUrl;
     public int BuyingPriceValue;
     public String Category;
-
+    public String uploadKey;
+    public String uid;
+public int dbUnits;
+    public int newUnits;
     public StcSelFragment() {
         // Required empty public constructor
     }
@@ -50,14 +55,6 @@ FragmentStcsaleBinding binding;
         // Inflate the layout for this fragment
         binding = FragmentStcsaleBinding.inflate(inflater, container, false);
         View rootView = binding.getRoot();
-
-        mStorageRef = FirebaseStorage.getInstance().getReference("sales");
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("sales");
-        List<String> categories = Arrays.asList("Mpesa", "Cash", "Other");
-
-        CategoryAdapter categoryAdapter = new CategoryAdapter(requireContext(), categories);
-        binding.spinner.setAdapter(categoryAdapter);
-
         Bundle args = getArguments();
         if (args != null) {
             String itemName = args.getString("itemName");
@@ -67,8 +64,10 @@ FragmentStcsaleBinding binding;
             String units = args.getString("units");
             String finalSp=args.getString("sellingPrice");
             String category = args.getString("category");
+            String bUploadKey= args.getString("mKey");
+            String bUid=args.getString("mUid");
 
-           binding.itemLabel.setText(itemName);
+            binding.itemLabel.setText(itemName);
             binding.UnitEditText.setText(units);
             binding.SellingPEditText.setText(finalSp);
             binding.AdditionalEdiText.setText(additional);
@@ -86,8 +85,18 @@ FragmentStcsaleBinding binding;
             ImageUrl=imageUrl;
             BuyingPriceValue=buyingPriceValue;
             Category=category;
-
+            dbUnits= Integer.parseInt(units);
+            uploadKey=bUploadKey;
+            uid=bUid;
         }
+        mStorageRef = FirebaseStorage.getInstance().getReference(uid).child("sales");
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("sales");
+        List<String> categories = Arrays.asList("Mpesa", "Cash", "Other");
+
+        CategoryAdapter categoryAdapter = new CategoryAdapter(requireContext(), categories);
+        binding.spinner.setAdapter(categoryAdapter);
+
+
 
 binding.buttonNext.setOnClickListener(new View.OnClickListener() {
     @Override
@@ -96,7 +105,7 @@ binding.buttonNext.setOnClickListener(new View.OnClickListener() {
             uploadFile();
         }
         else {
-            Toast.makeText(getContext(), "Please fill all fields", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Please fill all fields/enter valid units", Toast.LENGTH_LONG).show();
         }
 
 
@@ -128,7 +137,7 @@ binding.buttonNext.setOnClickListener(new View.OnClickListener() {
 
         try {
             int unitsValue = Integer.parseInt(units);
-            return unitsValue >= 0;
+            return unitsValue > 0 && unitsValue<= dbUnits;
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
@@ -181,5 +190,28 @@ binding.buttonNext.setOnClickListener(new View.OnClickListener() {
                         binding.progressBar.setVisibility(View.GONE);
                     }
                 });
+
+        DatabaseReference itemRef = FirebaseDatabase.getInstance().getReference(uid).child("uploads").child(sale.getmCategory()).child(uploadKey);
+        Map<String, Object> updateData = new HashMap<>();
+        newUnits=dbUnits-sale.getmUnits();
+        updateData.put("mUnits", newUnits);
+
+        // Update the item data in the database
+        itemRef.updateChildren(updateData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Data updated successfully
+                        Toast.makeText(getContext(), "Units updated successfully", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle the error
+                        Toast.makeText(getContext(), "Failed to update units: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
     }
 }

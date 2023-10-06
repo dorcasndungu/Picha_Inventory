@@ -24,6 +24,8 @@ import com.example.pichainventory.SearchableFragment;
 import com.example.pichainventory.adapters.OrderAdapter;
 import com.example.pichainventory.databinding.FragmentOrdRecBinding;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -69,6 +71,7 @@ public class OrdRecFragment extends Fragment implements OrderAdapter.OnItemClick
     private Map<String, ImageView> sectionArrowIconMap;
     private Map<String, RecyclerView> sectionRecyclerViewMap;
     private String searchQuery = "";
+    private String uid;
     public String mDate;
     public OrdRecFragment() {
         // Required empty public constructor
@@ -78,14 +81,17 @@ public class OrdRecFragment extends Fragment implements OrderAdapter.OnItemClick
         super.onCreate(savedInstanceState);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         String currentDate = dateFormat.format(new Date());
-        tDatabaseRef = FirebaseDatabase.getInstance().getReference("Orders").child(currentDate).child("Toys");
-        fDatabaseRef = FirebaseDatabase.getInstance().getReference("Orders").child(currentDate).child("Flowers");
-        bDatabaseRef = FirebaseDatabase.getInstance().getReference("Orders").child(currentDate).child("Bedding");
-        shDatabaseRef = FirebaseDatabase.getInstance().getReference("Orders").child(currentDate).child("Shoes");
-        btDatabaseRef = FirebaseDatabase.getInstance().getReference("Orders").child(currentDate).child("Beauty");
-        clDatabaseRef = FirebaseDatabase.getInstance().getReference("Orders").child(currentDate).child("Clothes");
-        decDatabaseRef = FirebaseDatabase.getInstance().getReference("Orders").child(currentDate).child("Decor");
-        othDatabaseRef = FirebaseDatabase.getInstance().getReference("Orders").child(currentDate).child("Other");
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        assert user != null;
+        uid =user.getUid();
+        tDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("Orders").child("Toys");
+        fDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("Orders").child("Flowers");
+        bDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("Orders").child("Bedding");
+        shDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("Orders").child("Shoes");
+        btDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("Orders").child("Beauty");
+        clDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("Orders").child("Clothes");
+        decDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("Orders").child("Decor");
+        othDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("Orders").child("Other");
         mDate=currentDate;
 
     }

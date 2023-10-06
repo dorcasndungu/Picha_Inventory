@@ -543,6 +543,7 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
                 args.putString("itemName", itemName);
                 args.putString("imageUrl", imageUrl);
                 args.putString("category",category);
+                args.putString("mUid",uid);
                 stcOrdFragment.setArguments(args);
                 replaceFragment(stcOrdFragment);
                 // Close the dialog
@@ -681,6 +682,8 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
                 String units = bundle.getString("mUnits");
                 String sellingPrice = bundle.getString("sellingPrice");
                 String category=bundle.getString("mCategory");
+                String mKey=bundle.getString("mKey");
+
 
                 StcSelFragment stcSelFragment = new StcSelFragment();
                 Bundle args = new Bundle();
@@ -690,8 +693,10 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
                 args.putString("additional", additional);
                 args.putString("units", units);
                 args.putString("sellingPrice", sellingPrice);
-
+                args.putString("mKey",mKey);
                 args.putString("category",category);
+                args.putString("mKey",mKey);
+                args.putString("mUid", uid);
                 stcSelFragment.setArguments(args);
                 replaceFragment(stcSelFragment);
 
@@ -712,6 +717,7 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
         bundle.putString("mCategory", upload.getmCategory());
         bundle.putString("mUnits", String.valueOf(upload.getmUnits()));
         bundle.putString("mKey", upload.getmKey());
+        bundle.putString("mUid", uid);
         showDialogWithItems(bundle);
     }
 
