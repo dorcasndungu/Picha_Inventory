@@ -92,13 +92,13 @@ tools:context=".ui_fragments.SalesRecFragment">
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.cardview.widget.CardView>
-        <devs.mulham.horizontalcalendar.HorizontalCalendarView
+       <!-- <devs.mulham.horizontalcalendar.HorizontalCalendarView
             android:id="@+id/calendarView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
             app:textColorSelected="#FFFF"/>
-
+-->
                 <!-- RelativeLayout Section -->
         <RelativeLayout
             android:id="@+id/salesRelativeL"
