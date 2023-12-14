@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".StockActivity">
 
-
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView"
         android:name="com.example.pichainventory.ui_fragments.DisplayBoxFragment"
