@@ -2,6 +2,11 @@
     <!-- Base application theme. -->
     <style name="Theme.Pichainventory" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Primary brand color. -->
+
+        <!-- background -->
+    </style>
+    <style name="Theme.Pichainventory.backG" parent="Theme.AppCompat.Light.DarkActionBar">
+    <item name="android:windowBackground">@drawable/background</item>
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/white</item>
@@ -11,10 +16,6 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- background -->
-    </style>
-    <style name="Theme.Pichainventory.backG" >
-    <item name="android:windowBackground">@drawable/background</item>
     </style>
     <style name="roundedImage" parent="">
         <item name="cornerFamily">rounded</item>
