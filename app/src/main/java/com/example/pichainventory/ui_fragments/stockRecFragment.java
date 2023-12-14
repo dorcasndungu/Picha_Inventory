@@ -636,17 +636,17 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
                             // Update the item data in the database with the new values
                             DatabaseReference itemRef = FirebaseDatabase.getInstance().getReference(uid).child("uploads").child(category).child(itemKey);
                             String itemName = itemLabel.getText().toString().trim();
-                            String buyingPrice = buyingP.getText().toString().trim();
-                            String sellingPrice = sellingPEditText.getText().toString().trim();
+                            int buyingPrice = Integer.parseInt(buyingP.getText().toString().trim());
+                            int sellingPrice = Integer.parseInt(sellingPEditText.getText().toString().trim());
                             int units = Integer.parseInt(UnitEditText.getText().toString().trim());
                             String additionalInfo=additionalEdiText.getText().toString().trim();
                             // Create a map to hold the updated data
                             Map<String, Object> updateData = new HashMap<>();
                             updateData.put("mName", itemName);
-                            updateData.put("mBuyingPrice", buyingPrice);
-                            updateData.put("mSellingPrice", sellingPrice);
+                            updateData.put("mBp", buyingPrice);
+                            updateData.put("mSp", sellingPrice);
                             updateData.put("mUnits", units);
-                            updateData.put("mAdditionalInfo", additionalInfo);
+                            updateData.put("mAddInfo", additionalInfo);
 
                             // Update the item data in the database
                             itemRef.updateChildren(updateData)
