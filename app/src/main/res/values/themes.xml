@@ -5,8 +5,9 @@
 
         <!-- background -->
     </style>
+
     <style name="Theme.Pichainventory.backG" parent="Theme.AppCompat.Light.DarkActionBar">
-    <item name="android:windowBackground">@drawable/background</item>
+        <item name="android:windowBackground">@drawable/background</item>
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/white</item>
@@ -17,10 +18,16 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
     </style>
+
     <style name="roundedImage" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">10dp</item>
         <item name="color">@color/white</item>
+    </style>
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Pichainventory.backG" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
 </resources>
