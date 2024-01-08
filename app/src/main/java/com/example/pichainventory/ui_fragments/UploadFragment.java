@@ -49,7 +49,6 @@ public class UploadFragment extends Fragment {
 
     FragmentUploadBinding binding;
     Uri sendUri;
-    String key="";
     private StorageTask mUploadTask;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
@@ -103,6 +102,8 @@ public class UploadFragment extends Fragment {
             }
         });
         return rootView;}
+    // Load image from Gallery
+
     private ActivityResultLauncher startForProfileImageResult=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
                 @Override
