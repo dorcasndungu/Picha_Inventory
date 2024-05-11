@@ -1,5 +1,6 @@
 package com.example.pichainventory.Models;
 
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -13,13 +14,14 @@ public class Sale {
     private int mUnits;
     private String mCategory;
     private String mDate;
+    private String mTime;
     private String mAddInfo;
     private String mPayMode;
 
     public Sale() {
         //empty constructor needed
     }
-    public Sale(String mName, String mImageUrl, int mBp, int mSp, int mUnits, String mCategory, Date mDate, String mAddInfo, String mPayMode) {
+    public Sale(String mName, String mImageUrl, int mBp, int mSp, int mUnits, String mCategory, Date mDate, Time mTime, String mAddInfo, String mPayMode) {
         this.mName = mName;
         this.mImageUrl = mImageUrl;
         this.mBp = mBp;
@@ -28,6 +30,7 @@ public class Sale {
         this.mUnits = mUnits;
         this.mCategory = mCategory;
         this.mDate = formatDate(mDate);
+        this.mTime=formatTime(mTime);
         this.mAddInfo = mAddInfo;
         this.mPayMode = mPayMode;
     }
@@ -35,7 +38,10 @@ public class Sale {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         return dateFormat.format(date);
     }
-
+    private String formatTime(Time time) {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        return timeFormat.format(time);
+    }
     public String getmName() {
         return mName;
     }
@@ -98,6 +104,14 @@ public class Sale {
 
     public void setmDate(String mDate) {
         this.mDate = mDate;
+    }
+
+    public String getmTime() {
+        return mTime;
+    }
+
+    public void setmTime(String mTime) {
+        this.mTime = mTime;
     }
 
     public String getmAddInfo() {

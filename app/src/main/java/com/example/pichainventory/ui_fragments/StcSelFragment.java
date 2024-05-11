@@ -23,6 +23,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.squareup.picasso.Picasso;
 
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -148,6 +149,11 @@ binding.buttonNext.setOnClickListener(new View.OnClickListener() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         String currentDate = dateFormat.format(new Date());
 
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        String currentTimeString = timeFormat.format(new Date());
+// Parse the formatted time string to get the Time object
+        Time currentTime = Time.valueOf(currentTimeString);
+
         String updatedSellingPrice = binding.SellingPEditText.getText().toString().trim();
         String updatedUnits = binding.UnitEditText.getText().toString().trim();
 
@@ -156,7 +162,7 @@ binding.buttonNext.setOnClickListener(new View.OnClickListener() {
         int updatedUnitsValue = Integer.parseInt(updatedUnits);
 
         // Create an instance of sale with the retrieved data
-        Sale sale = new Sale(ItemName, ImageUrl, BuyingPriceValue, updatedSellingPriceValue, updatedUnitsValue, Category, new Date(), binding.AdditionalEdiText.getText().toString(), binding.spinner.getSelectedItem().toString());
+        Sale sale = new Sale(ItemName, ImageUrl, BuyingPriceValue, updatedSellingPriceValue, updatedUnitsValue, Category, new Date(), currentTime, binding.AdditionalEdiText.getText().toString(), binding.spinner.getSelectedItem().toString());
 
         // Disable the button and show the progress bar
         binding.buttonNext.setEnabled(false);
