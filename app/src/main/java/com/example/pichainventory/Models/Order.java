@@ -13,10 +13,11 @@ public class Order {
     private String mCategory;
     private String mDate;
     private String mAddInfo;
-    private boolean mBrought;
+    private String mStatus;
+    private int mDayCount;
     private String mKey;
 
-    public Order(String mName, String mImageUrl, String mDesc, String mCont, int mUnits, String mCategory, Date mDate, String mAddInfo, boolean mBrought, String mKey) {
+    public Order(String mName, String mImageUrl, String mDesc, String mCont, int mUnits, String mCategory, Date mDate, String mAddInfo, String mStatus,int mDayCount, String mKey) {
         this.mName = mName;
         this.mImageUrl = mImageUrl;
         this.mDesc = mDesc;
@@ -25,7 +26,8 @@ public class Order {
         this.mCategory = mCategory;
         this.mDate = formatDate(mDate); // Format the date without time
         this.mAddInfo = mAddInfo;
-        this.mBrought = mBrought;
+        this.mStatus = mStatus;
+        this.mDayCount=mDayCount;
         this.mKey = mKey;
     }
 
@@ -100,12 +102,20 @@ public class Order {
         this.mAddInfo = mAddInfo;
     }
 
-    public boolean ismBrought() {
-        return mBrought;
+    public String getmStatus() {
+        return mStatus;
     }
 
-    public void setmBrought(boolean mBrought) {
-        this.mBrought = mBrought;
+    public void setmStatus(String mStatus) {
+        this.mStatus = mStatus;
+    }
+
+    public int getmDayCount() {
+        return mDayCount;
+    }
+
+    public void setmDayCount(int mDayCount) {
+        this.mDayCount = mDayCount;
     }
 
     public String getmKey() {
