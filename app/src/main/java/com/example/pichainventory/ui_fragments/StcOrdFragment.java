@@ -122,7 +122,7 @@ public class StcOrdFragment extends Fragment {
         String uploadId = mDatabaseRef.child(Category).push().getKey();
 
         // Create an instance of sale with the retrieved data
-        Order order= new Order(ItemName, ImageUrl, binding.DescEditText.getText().toString(), binding.ContactEditText.getText().toString(),Integer.parseInt(binding.UnitEditText.getText().toString()), Category, new Date(), binding.AdditionalEdiText.getText().toString(), false,uploadId);
+        Order order= new Order(ItemName, ImageUrl, binding.DescEditText.getText().toString(), binding.ContactEditText.getText().toString(),Integer.parseInt(binding.UnitEditText.getText().toString()), Category, new Date(), binding.AdditionalEdiText.getText().toString(), "Red",0,uploadId);
 
         // Disable the button and show the progress bar
         binding.buttonNext.setEnabled(false);
