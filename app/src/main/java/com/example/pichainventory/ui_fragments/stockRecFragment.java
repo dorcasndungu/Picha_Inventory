@@ -164,6 +164,7 @@ public class stockRecFragment extends Fragment implements StockAdapter.OnItemCli
                 fragmentTransaction.commit();
             }});
         return rootView;
+
     }
     private void showConnectToInternetDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());

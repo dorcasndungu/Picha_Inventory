@@ -5,6 +5,8 @@ import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -113,7 +115,26 @@ public class OrdRecFragment extends Fragment implements OrderAdapter.OnItemClick
         setupSection("shoes", R.id.shoesRecycler, R.id.SarrowIcon, rootView);
         setupSection("beauty", R.id.beautyRecycler, R.id.BtarrowIcon, rootView);
         setupSection("clothes", R.id.clothesRecycler, R.id.CarrowIcon, rootView);
+        binding.addButton.setOnClickListener(new  View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navigateToAddOrder();
+            }});
         return rootView;
+    }
+    private void navigateToAddOrder() {
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        StcOrdFragment stcOrdFragment = new StcOrdFragment();
+
+        Bundle args = new Bundle();
+        args.putBoolean("isNewOrder", true);
+        args.putString("mUid", uid); // Pass the uid here
+        stcOrdFragment.setArguments(args);
+
+        fragmentTransaction.replace(R.id.fragmentContainerView, stcOrdFragment); // R.id.fragment_container is the id of your container where fragments are displayed
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
     private void setupSection(final String sectionName, int recyclerViewId, int arrowIconId, View rootView) {
         ImageView arrowIcon = rootView.findViewById(arrowIconId);

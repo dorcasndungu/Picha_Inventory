@@ -56,16 +56,16 @@ public class DisplayBoxFragment extends Fragment {
                     break;
             }
         }).attach();
-        add.setOnClickListener(new  View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                UploadFragment uploadFragment = new UploadFragment();
-                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.fragmentContainerView, uploadFragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-            }});
+//        add.setOnClickListener(new  View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                UploadFragment uploadFragment = new UploadFragment();
+//                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+//                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//                fragmentTransaction.replace(R.id.fragmentContainerView, uploadFragment);
+//                fragmentTransaction.addToBackStack(null);
+//                fragmentTransaction.commit();
+//            }});
         return rootView;
     }
     @Override
