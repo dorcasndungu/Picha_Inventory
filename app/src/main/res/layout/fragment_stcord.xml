@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui_fragments.StcOrdFragment">
 
@@ -18,7 +17,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
-
 
             <LinearLayout
                 android:id="@+id/linearLayout"
@@ -47,24 +45,39 @@
                     android:textSize="36sp"
                     android:textStyle="bold" />
 
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/profilePhoto"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:scaleType="centerCrop"
-                    app:shapeAppearanceOverlay="@style/roundedImage" />
+                    android:layout_height="300dp">
 
-              <EditText
-                android:id="@+id/nameLabel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:hint="Enter Item name"
-                  android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-                android:textColor="@color/black"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/profilePhoto"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        app:shapeAppearanceOverlay="@style/roundedImage"
+                        android:src="@drawable/placeholder" />
+
+                    <TextView
+                        android:id="@+id/addImageHint"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="Click to add image"
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp"
+                        android:background="#AA000000" />
+                </FrameLayout>
+
+                <EditText
+                    android:id="@+id/nameLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:hint="Enter Item name"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                    android:textColor="@color/black"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/BuyingPLabel"
@@ -89,6 +102,7 @@
                     android:textColor="@color/black"
                     android:textColorHint="@color/gray"
                     android:textSize="16sp" />
+
                 <TextView
                     android:id="@+id/UnitLabel"
                     android:layout_width="match_parent"
@@ -97,7 +111,6 @@
                     android:text="Units"
                     android:textColor="@color/earthGreen"
                     android:textSize="16sp"
-
                     android:textStyle="bold" />
 
                 <EditText
@@ -111,6 +124,7 @@
                     android:textColor="@color/black"
                     android:textColorHint="@color/gray"
                     android:textSize="16sp" />
+
                 <TextView
                     android:id="@+id/text_view_label"
                     android:layout_width="wrap_content"
@@ -132,6 +146,7 @@
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/SellingPLabel"
                     android:layout_width="match_parent"
@@ -151,8 +166,7 @@
                     android:padding="10dp"
                     android:textColor="@color/black"
                     android:textColorHint="@color/gray"
-                    android:textSize="16sp"
-                    />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/AdditionalInfoLabel"
@@ -186,7 +200,7 @@
                     android:layout_above="@+id/buttonNext"
                     android:layout_marginStart="5dp"
                     android:layout_marginTop="5dp"
-                    />
+                    android:visibility="gone" />
 
                 <Button
                     android:id="@+id/buttonNext"
@@ -197,12 +211,7 @@
                     android:layout_marginTop="5dp"
                     android:text="ORDER"
                     android:textStyle="bold" />
-
-
             </LinearLayout>
-
         </ScrollView>
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

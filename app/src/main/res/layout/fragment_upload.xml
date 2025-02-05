@@ -43,25 +43,30 @@
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/profilePhoto"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:scaleType="centerCrop"
-                    app:shapeAppearanceOverlay="@style/roundedImage"
-                    app:srcCompat="@drawable/placeholder" />
+                    android:layout_height="300dp">
 
-                <!--        <ImageView
-                            android:id="@+id/addButton"
-                            android:layout_width="60dp"
-                            android:layout_marginStart="-60dp"
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/profilePhoto"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        app:shapeAppearanceOverlay="@style/roundedImage"
+                        android:src="@drawable/placeholder" />
 
-                            android:layout_marginTop="5dp"
-                            android:layout_height="60dp"
-                            app:srcCompat="@drawable/ic_baseline_add_circle_24" />&ndash;&gt;
+                    <TextView
+                        android:id="@+id/addImageHint"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="Click to add image"
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp"
+                        android:background="#AA000000" />
+                </FrameLayout>
 
-
-                    --><TextView
+            <TextView
                 android:id="@+id/nameLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

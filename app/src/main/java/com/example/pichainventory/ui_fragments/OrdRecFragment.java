@@ -35,6 +35,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -75,9 +76,11 @@ public class OrdRecFragment extends Fragment implements OrderAdapter.OnItemClick
     private String searchQuery = "";
     private String uid;
     public String mDate;
+
     public OrdRecFragment() {
         // Required empty public constructor
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,7 +88,7 @@ public class OrdRecFragment extends Fragment implements OrderAdapter.OnItemClick
         String currentDate = dateFormat.format(new Date());
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         assert user != null;
-        uid =user.getUid();
+        uid = user.getUid();
         tDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("Orders").child("Toys");
         fDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("Orders").child("Flowers");
         bDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("Orders").child("Bedding");
@@ -94,9 +97,9 @@ public class OrdRecFragment extends Fragment implements OrderAdapter.OnItemClick
         clDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("Orders").child("Clothes");
         decDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("Orders").child("Decor");
         othDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("Orders").child("Other");
-        mDate=currentDate;
-
+        mDate = currentDate;
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -115,13 +118,15 @@ public class OrdRecFragment extends Fragment implements OrderAdapter.OnItemClick
         setupSection("shoes", R.id.shoesRecycler, R.id.SarrowIcon, rootView);
         setupSection("beauty", R.id.beautyRecycler, R.id.BtarrowIcon, rootView);
         setupSection("clothes", R.id.clothesRecycler, R.id.CarrowIcon, rootView);
-        binding.addButton.setOnClickListener(new  View.OnClickListener() {
+        binding.addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 navigateToAddOrder();
-            }});
+            }
+        });
         return rootView;
     }
+
     private void navigateToAddOrder() {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -136,6 +141,7 @@ public class OrdRecFragment extends Fragment implements OrderAdapter.OnItemClick
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
+
     private void setupSection(final String sectionName, int recyclerViewId, int arrowIconId, View rootView) {
         ImageView arrowIcon = rootView.findViewById(arrowIconId);
         RecyclerView recyclerView = rootView.findViewById(recyclerViewId);
@@ -191,206 +197,44 @@ public class OrdRecFragment extends Fragment implements OrderAdapter.OnItemClick
                 binding.progressBar.setVisibility(View.GONE);
             }
         }, 1000);
-        // Set up the FirebaseRecyclerAdapter
-        FirebaseRecyclerOptions<Order> options =
-                new FirebaseRecyclerOptions.Builder<Order>()
-                        .setQuery(tDatabaseRef, Order.class)
-                        .build();
 
-        tDatabaseRef.addValueEventListener(new ValueEventListener() {
+        setupFirebaseListeners();
+    }
+
+    private void setupFirebaseListeners() {
+        setupFirebaseListener(tDatabaseRef, tOrders, binding.toysRecycler);
+        setupFirebaseListener(fDatabaseRef, fOrders, binding.flowersRecycler);
+        setupFirebaseListener(bDatabaseRef, bOrders, binding.beddingRecycler);
+        setupFirebaseListener(shDatabaseRef, shOrders, binding.shoesRecycler);
+        setupFirebaseListener(btDatabaseRef, btOrders, binding.beautyRecycler);
+        setupFirebaseListener(clDatabaseRef, clOrders, binding.clothesRecycler);
+        setupFirebaseListener(decDatabaseRef, decOrders, binding.decorRecycler);
+        setupFirebaseListener(othDatabaseRef, othOrders, binding.otherRecycler);
+    }
+
+    private void setupFirebaseListener(DatabaseReference databaseRef, List<Order> ordersList, RecyclerView recyclerView) {
+        databaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                tOrders.clear();
+                ordersList.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Order order = postSnapshot.getValue(Order.class);
-                    tOrders.add(order);
+                    if (order != null) {
+                        try {
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                            Date orderDate = sdf.parse(order.getmDate());
+                            long diff = new Date().getTime() - orderDate.getTime();
+                            order.setmDayCount((int) (diff / (1000 * 60 * 60 * 24)));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        ordersList.add(order);
+                    }
                 }
 
-                tAdapter = new OrderAdapter(tOrders, getContext());
-                tAdapter.setOnItemClickListener(OrdRecFragment.this);
-                binding.toysRecycler.setAdapter(tAdapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
-        // Set up the FirebaseRecyclerAdapter
-        FirebaseRecyclerOptions<Order> flowersOptions =
-                new FirebaseRecyclerOptions.Builder<Order>()
-                        .setQuery(fDatabaseRef, Order.class)
-                        .build();
-
-        fDatabaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                List<Order> newOrders = new ArrayList<>();
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Order order = postSnapshot.getValue(Order.class);
-                    newOrders.add(order);
-                }
-                fOrders.clear();
-                fOrders.addAll(newOrders);
-                fAdapter = new OrderAdapter(fOrders, getContext());
-                fAdapter.setOnItemClickListener(OrdRecFragment.this);
-                binding.flowersRecycler.setAdapter(fAdapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        // Set up the beauty FirebaseRecyclerAdapter
-        FirebaseRecyclerOptions<Order> beddingOptions =
-                new FirebaseRecyclerOptions.Builder<Order>()
-                        .setQuery(bDatabaseRef, Order.class)
-                        .build();
-
-        bDatabaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                bOrders.clear();
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Order order = postSnapshot.getValue(Order.class);
-                    bOrders.add(order);
-                }
-
-                bAdapter = new OrderAdapter(bOrders, getContext());
-                bAdapter.setOnItemClickListener(OrdRecFragment.this);
-                binding.beddingRecycler.setAdapter(bAdapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Set up the shoesRecyclerAdapter
-        FirebaseRecyclerOptions<Order> shoesOptions =
-                new FirebaseRecyclerOptions.Builder<Order>()
-                        .setQuery(shDatabaseRef, Order.class)
-                        .build();
-
-        shDatabaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                shOrders.clear();
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Order order = postSnapshot.getValue(Order.class);
-                    shOrders.add(order);
-                }
-
-                shAdapter = new OrderAdapter(shOrders, getContext());
-                shAdapter.setOnItemClickListener(OrdRecFragment.this);
-                binding.shoesRecycler.setAdapter(shAdapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        // Set up the FirebaseRecyclerAdapter
-        FirebaseRecyclerOptions<Order> beautyOptions =
-                new FirebaseRecyclerOptions.Builder<Order>()
-                        .setQuery(btDatabaseRef, Order.class)
-                        .build();
-
-        btDatabaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                btOrders.clear();
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Order order = postSnapshot.getValue(Order.class);
-                    btOrders.add(order);
-                }
-
-                btAdapter = new OrderAdapter(btOrders, getContext());
-                btAdapter.setOnItemClickListener(OrdRecFragment.this);
-                binding.beautyRecycler.setAdapter(btAdapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-// Set up the FirebaseRecyclerAdapter
-        FirebaseRecyclerOptions<Order> clothesOptions =
-                new FirebaseRecyclerOptions.Builder<Order>()
-                        .setQuery(clDatabaseRef, Order.class)
-                        .build();
-
-        clDatabaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                clOrders.clear();
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Order order = postSnapshot.getValue(Order.class);
-                    clOrders.add(order);
-                }
-
-                clAdapter = new OrderAdapter(clOrders, getContext());
-                clAdapter.setOnItemClickListener(OrdRecFragment.this);
-                binding.clothesRecycler.setAdapter(clAdapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-// Set up the FirebaseRecyclerAdapter
-        FirebaseRecyclerOptions<Order> decorOptions =
-                new FirebaseRecyclerOptions.Builder<Order>()
-                        .setQuery(decDatabaseRef, Order.class)
-                        .build();
-
-        decDatabaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                decOrders.clear();
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Order order = postSnapshot.getValue(Order.class);
-                    decOrders.add(order);
-                }
-
-                decAdapter = new OrderAdapter(decOrders, getContext());
-                decAdapter.setOnItemClickListener(OrdRecFragment.this);
-                binding.decorRecycler.setAdapter(decAdapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-// Set up the FirebaseRecyclerAdapter
-        FirebaseRecyclerOptions<Order> otherOptions =
-                new FirebaseRecyclerOptions.Builder<Order>()
-                        .setQuery(othDatabaseRef, Order.class)
-                        .build();
-
-        othDatabaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                othOrders.clear();
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Order order = postSnapshot.getValue(Order.class);
-                    othOrders.add(order);
-                }
-
-                othAdapter = new OrderAdapter(othOrders, getContext());
-                othAdapter.setOnItemClickListener(OrdRecFragment.this);
-                binding.otherRecycler.setAdapter(othAdapter);
+                OrderAdapter adapter = new OrderAdapter(ordersList, getContext(), uid);
+                adapter.setOnItemClickListener(OrdRecFragment.this);
+                recyclerView.setAdapter(adapter);
             }
 
             @Override
@@ -415,6 +259,7 @@ public class OrdRecFragment extends Fragment implements OrderAdapter.OnItemClick
 
         sectionVisibilityMap.put(sectionName, !isSectionVisible);
     }
+
     private void showDialogWithItems(Bundle bundle) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.orderdialog, null);
@@ -427,17 +272,18 @@ public class OrdRecFragment extends Fragment implements OrderAdapter.OnItemClick
         TextView additionalText = dialogView.findViewById(R.id.AdditionalEdiText);
         TextView contactText = dialogView.findViewById(R.id.ContactTextView);
         TextView UnitsText = dialogView.findViewById(R.id.UnitTextView);
-        Button backButton= dialogView.findViewById(R.id.buttonBack);
-        FloatingActionButton editBtn=dialogView.findViewById(R.id.editButton);
-        FloatingActionButton deleteBtn=dialogView.findViewById(R.id.deleteButton);
+        Button backButton = dialogView.findViewById(R.id.buttonBack);
+        FloatingActionButton editBtn = dialogView.findViewById(R.id.editButton);
+        FloatingActionButton deleteBtn = dialogView.findViewById(R.id.deleteButton);
+
         // Retrieve data from the Bundle
         String itemName = bundle.getString("itemName");
         String imageUrl = bundle.getString("imageUrl");
         String additional = bundle.getString("additional");
         String mCategory = bundle.getString("mCategory");
         String units = bundle.getString("mUnits");
-        String desc=bundle.getString("descrptn");
-        String contact=bundle.getString("contact");
+        String desc = bundle.getString("descrptn");
+        String contact = bundle.getString("contact");
 
         // Set values to the views
         itemLabel.setText(itemName);
@@ -446,18 +292,16 @@ public class OrdRecFragment extends Fragment implements OrderAdapter.OnItemClick
         additionalText.setText(additional);
         Picasso.get()
                 .load(imageUrl)
-                .placeholder(R.drawable.placeholder) // Placeholder image until the actual image is loaded
+                .placeholder(R.drawable.placeholder)
                 .fit()
                 .centerCrop()
                 .into(displayPhoto);
-
 
         UnitsText.setText(units);
 
         // Create and show the dialog
         AlertDialog dialog = builder.create();
         dialog.show();
-
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -467,6 +311,7 @@ public class OrdRecFragment extends Fragment implements OrderAdapter.OnItemClick
             }
         });
     }
+
     @Override
     public void onItemClick(int position, Order order) {
         Bundle bundle = new Bundle();
@@ -509,6 +354,7 @@ public class OrdRecFragment extends Fragment implements OrderAdapter.OnItemClick
         othAdapter.resetData();
         fAdapter.resetData();
     }
+
     private void filterItems() {
         // Perform filtering logic based on the search query
 

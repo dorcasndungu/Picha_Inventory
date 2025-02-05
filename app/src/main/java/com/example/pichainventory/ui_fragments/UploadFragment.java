@@ -114,6 +114,7 @@ public class UploadFragment extends Fragment {
                         Uri uri=data.getData();
                         sendUri=uri;
                         Picasso.get().load(uri).into(binding.profilePhoto);
+                        binding.addImageHint.setVisibility(View.GONE); // Hide the hint when an image is selected
                     }
                 }
             });
@@ -123,9 +124,15 @@ public class UploadFragment extends Fragment {
         return mime.getExtensionFromMimeType(cR.getType(uri));
     }
     private boolean isFormValid() {
-        return isNameValid() && isBuyingPriceValid() && isSellingPriceValid() && isUnitsValid();
+        return isNameValid() && isBuyingPriceValid() && isSellingPriceValid() && isUnitsValid()&& isImageSelected();
     }
-
+    private boolean isImageSelected() {
+        if (sendUri == null) {
+            Toast.makeText(getContext(), "Please select an image", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
+    }
     private boolean isNameValid() {
         String name = binding.nameEditText.getText().toString().trim();
         return !TextUtils.isEmpty(name);

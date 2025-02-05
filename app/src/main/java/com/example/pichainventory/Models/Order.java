@@ -3,8 +3,10 @@ package com.example.pichainventory.Models;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class Order {
+    // Existing fields
     private String mName;
     private String mImageUrl;
     private String mDesc;
@@ -17,7 +19,7 @@ public class Order {
     private int mDayCount;
     private String mKey;
 
-    public Order(String mName, String mImageUrl, String mDesc, String mCont, int mUnits, String mCategory, Date mDate, String mAddInfo, String mStatus,int mDayCount, String mKey) {
+    public Order(String mName, String mImageUrl, String mDesc, String mCont, int mUnits, String mCategory, Date mDate, String mAddInfo, String mStatus, int mDayCount, String mKey) {
         this.mName = mName;
         this.mImageUrl = mImageUrl;
         this.mDesc = mDesc;
@@ -27,17 +29,34 @@ public class Order {
         this.mDate = formatDate(mDate); // Format the date without time
         this.mAddInfo = mAddInfo;
         this.mStatus = mStatus;
-        this.mDayCount=mDayCount;
+        this.mDayCount = mDayCount;
         this.mKey = mKey;
     }
 
     public Order() {
-        //empty constructor needed
+        // Empty constructor needed
     }
+
     private String formatDate(Date date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         return dateFormat.format(date);
     }
+
+    public int calculateDayCount() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        try {
+            Date orderDate = dateFormat.parse(mDate);
+            Date currentDate = new Date();
+            long diffInMillis = currentDate.getTime() - orderDate.getTime();
+            return (int) TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    // Existing getters and setters
+
     public String getmName() {
         return mName;
     }

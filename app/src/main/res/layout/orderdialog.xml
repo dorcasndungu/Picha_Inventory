@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:id="@+id/orderdialog"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-
+android:background="@color/black"
     android:layout_height="wrap_content">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -95,7 +95,44 @@
                     android:textColor="@color/white"
                     android:textColorHint="#52FFFFFF"
                     android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/StatusLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="Status"
+                    android:textColor="@color/earthGreen"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+                <RadioGroup
+                    android:id="@+id/radioGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintStart_toStartOf="@+id/sPtextView"
+                    app:layout_constraintTop_toBottomOf="@+id/nameTextView"
+                    >
 
+                    <RadioButton
+                        android:id="@+id/radioButtonRed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@android:color/holo_red_light"
+                        android:checked="true" />
+
+                    <RadioButton
+                        android:id="@+id/radioButtonAmber"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@android:color/holo_orange_light" />
+
+                    <RadioButton
+                        android:id="@+id/radioButtonGreen"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@android:color/holo_green_light" />
+                </RadioGroup>
                 <TextView
                     android:id="@+id/SellingPLabel"
                     android:layout_width="match_parent"

@@ -71,7 +71,6 @@ public class StcOrdFragment extends Fragment {
             }
 
             mStorageRef = FirebaseStorage.getInstance().getReference(uid).child("Orders");
-            mDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("Orders");
 
             if (!isNewOrder) {
                 String itemName = args.getString("itemName");
@@ -108,10 +107,14 @@ public class StcOrdFragment extends Fragment {
         binding.buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Category = binding.spinner.getSelectedItem().toString();
+                mDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("Orders").child(Category);
                 if (isFormValid()) {
                     if (sendUri != null) {
+                        showProgress("Uploading image...");
                         uploadFile();
                     } else {
+                        showProgress("Saving order...");
                         saveOrderToDatabase(); // Save without image
                     }
                 } else {
@@ -123,6 +126,17 @@ public class StcOrdFragment extends Fragment {
         return rootView;
     }
 
+    private void showProgress(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        binding.buttonNext.setEnabled(false);
+        binding.progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void hideProgress() {
+        binding.progressBar.setVisibility(View.GONE);
+        binding.buttonNext.setEnabled(true);
+    }
+
     private final ActivityResultLauncher<Intent> startForProfileImageResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -132,6 +146,7 @@ public class StcOrdFragment extends Fragment {
                         Uri uri = data.getData();
                         sendUri = uri;
                         Picasso.get().load(uri).into(binding.profilePhoto);
+                        binding.addImageHint.setVisibility(View.GONE); // Hide the hint when an image is selected
                     }
                 }
             });
@@ -143,9 +158,15 @@ public class StcOrdFragment extends Fragment {
     }
 
     private boolean isFormValid() {
-        return isNameValid() && isDescValid() && isContactValid() && isUnitsValid();
+        return isNameValid() && isDescValid() && isContactValid() && isImageSelected();
     }
-
+    private boolean isImageSelected() {
+        if (sendUri == null) {
+            Toast.makeText(getContext(), "Please select an image", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
+    }
     private boolean isNameValid() {
         String name = binding.nameLabel.getText().toString().trim();
         return !TextUtils.isEmpty(name);
@@ -195,6 +216,7 @@ public class StcOrdFragment extends Fragment {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(getContext(), "Failed to upload image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        hideProgress();
                     }
                 });
     }
@@ -222,24 +244,19 @@ public class StcOrdFragment extends Fragment {
                 uploadId
         );
 
-        binding.buttonNext.setEnabled(false);
-        binding.progressBar.setVisibility(View.VISIBLE);
-
         mDatabaseRef.child(uploadId).setValue(order)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(getContext(), "Order saved successfully", Toast.LENGTH_SHORT).show();
-                        binding.buttonNext.setEnabled(true);
-                        binding.progressBar.setVisibility(View.GONE);
+                        hideProgress();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(getContext(), "Failed to save order: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        binding.buttonNext.setEnabled(true);
-                        binding.progressBar.setVisibility(View.GONE);
+                        hideProgress();
                     }
                 });
     }
@@ -265,24 +282,19 @@ public class StcOrdFragment extends Fragment {
                 uploadId
         );
 
-        binding.buttonNext.setEnabled(false);
-        binding.progressBar.setVisibility(View.VISIBLE);
-
         mDatabaseRef.child(uploadId).setValue(order)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(getContext(), "Order saved successfully", Toast.LENGTH_SHORT).show();
-                        binding.buttonNext.setEnabled(true);
-                        binding.progressBar.setVisibility(View.GONE);
+                        hideProgress();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(getContext(), "Failed to save order: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        binding.buttonNext.setEnabled(true);
-                        binding.progressBar.setVisibility(View.GONE);
+                        hideProgress();
                     }
                 });
     }
