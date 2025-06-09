@@ -22,7 +22,9 @@ import android.widget.Toast;
 
 import com.example.pichainventory.CategoryAdapter;
 import com.example.pichainventory.Models.Upload;
+import com.example.pichainventory.R;
 import com.example.pichainventory.databinding.FragmentUploadBinding;
+import com.example.pichainventory.utils.CloudinaryConfig;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -37,6 +39,8 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.Transformation;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -74,7 +78,7 @@ public class UploadFragment extends Fragment {
         binding.spinner.setAdapter(categoryAdapter);
 
 
-        binding.profilePhoto.setOnClickListener(new View.OnClickListener() {
+        binding.productImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ImagePicker.with(UploadFragment.this)	    			//Crop image(Optional), Check Customization for more option
@@ -91,13 +95,9 @@ public class UploadFragment extends Fragment {
                 if (mUploadTask != null && mUploadTask.isInProgress()) {
                     Toast.makeText(getContext(), "Upload in progress", Toast.LENGTH_SHORT).show();
                 } else if (isFormValid()) {
-                    if (sendUri != null) {
-                        uploadFile();
-                    } else {
-                        Toast.makeText(getContext(), "No file chosen", Toast.LENGTH_SHORT).show();
-                    }
+                    uploadFile();
                 } else {
-                    Toast.makeText(getContext(), "Please fill all fields", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Please fill all required fields", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -113,7 +113,7 @@ public class UploadFragment extends Fragment {
                         Intent data = result.getData();
                         Uri uri=data.getData();
                         sendUri=uri;
-                        Picasso.get().load(uri).into(binding.profilePhoto);
+                        Picasso.get().load(uri).into(binding.productImage);
                         binding.addImageHint.setVisibility(View.GONE); // Hide the hint when an image is selected
                     }
                 }
@@ -124,7 +124,7 @@ public class UploadFragment extends Fragment {
         return mime.getExtensionFromMimeType(cR.getType(uri));
     }
     private boolean isFormValid() {
-        return isNameValid() && isBuyingPriceValid() && isSellingPriceValid() && isUnitsValid()&& isImageSelected();
+        return isNameValid() && isBuyingPriceValid() && isSellingPriceValid() && isUnitsValid();
     }
     private boolean isImageSelected() {
         if (sendUri == null) {
@@ -178,71 +178,73 @@ public class UploadFragment extends Fragment {
     }
 
     private void uploadFile() {
+        String selectedCategory = binding.spinner.getSelectedItem().toString();
+        
+        // Show progress
+        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.buttonNext.setEnabled(false);
+        
         if (sendUri != null) {
-            String selectedCategory = binding.spinner.getSelectedItem().toString();
-            StorageReference fileReference = mStorageRef.child(selectedCategory).child(System.currentTimeMillis()
-                    + "." + getFileExtension(sendUri));
+            // Upload to Cloudinary if image is selected
+            CloudinaryConfig.uploadImage(requireContext(), sendUri, new CloudinaryConfig.CloudinaryCallback() {
+                @Override
+                public void onSuccess(String cloudinaryUrl) {
+                    saveToDatabase(selectedCategory, cloudinaryUrl);
+                }
 
-            mUploadTask = fileReference.putFile(sendUri)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                            // Show the progress bar and set initial progress
-                            binding.progressBar.setVisibility(View.VISIBLE);
-                            binding.progressBar.setProgress(0);
-
-                            Toast.makeText(getContext(), "Upload started", Toast.LENGTH_SHORT).show();
-
-                            // Observe the upload progress
-                            mUploadTask = fileReference.putFile(sendUri)
-                                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                                        @Override
-                                        public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
-                                            // Calculate the progress percentage
-                                            double progress = (100.0 * snapshot.getBytesTransferred()) / snapshot.getTotalByteCount();
-
-                                            // Update the progress bar
-                                            binding.progressBar.setProgress((int) progress);
-                                        }
-                                    })
-                                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                        @Override
-                                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                            binding.progressBar.setVisibility(View.GONE);
-                                            Toast.makeText(getContext(), "Upload successful", Toast.LENGTH_LONG).show();
-
-                                            // Get the image download URL
-                                            Task<Uri> downloadUrlTask = taskSnapshot.getStorage().getDownloadUrl();
-                                            downloadUrlTask.addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                                @Override
-                                                public void onSuccess(Uri uri) {
-                                                    String imageUrl = uri.toString();
-                                                    String selectedCategory = binding.spinner.getSelectedItem().toString();
-                                                    String uploadId = mDatabaseRef.child(selectedCategory).push().getKey();
-                                                    Upload upload = new Upload(binding.nameEditText.getText().toString().trim(),
-                                                            imageUrl,
-                                                            Integer.parseInt(binding.BuyingPEditText.getText().toString().trim()),
-                                                            Integer.parseInt(binding.SellingPEditText.getText().toString().trim()),
-                                                            Integer.parseInt(binding.unitsEditText.getText().toString().trim()),
-                                                            binding.spinner.getSelectedItem().toString(),
-                                                            new Date(),
-                                                            binding.AdditionalEdiText.getText().toString().trim(),uploadId);
-                                                    mDatabaseRef.child(selectedCategory).child(uploadId).setValue(upload);
-                                                }
-                                            }).addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
-
-                                        }
-                                    });
-                        }
-                    });
+                @Override
+                public void onError(String error) {
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.buttonNext.setEnabled(true);
+                    Toast.makeText(getContext(), "Upload failed: " + error, Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            // Save without image
+            saveToDatabase(selectedCategory, null);
         }
-    }}
+    }
+
+    private void saveToDatabase(String selectedCategory, String imageUrl) {
+        String uploadId = mDatabaseRef.child(selectedCategory).push().getKey();
+        Upload upload = new Upload(
+            binding.nameEditText.getText().toString().trim(),
+            imageUrl, // This can be null
+            Integer.parseInt(binding.BuyingPEditText.getText().toString().trim()),
+            Integer.parseInt(binding.SellingPEditText.getText().toString().trim()),
+            Integer.parseInt(binding.unitsEditText.getText().toString().trim()),
+            selectedCategory,
+            new Date(),
+            binding.AdditionalEdiText.getText().toString().trim(),
+            uploadId
+        );
+
+        // Save to Firebase Database
+        mDatabaseRef.child(selectedCategory).child(uploadId).setValue(upload)
+            .addOnSuccessListener(aVoid -> {
+                binding.progressBar.setVisibility(View.GONE);
+                binding.buttonNext.setEnabled(true);
+                Toast.makeText(getContext(), "Upload successful", Toast.LENGTH_SHORT).show();
+                // Clear form or navigate away
+                clearForm();
+            })
+            .addOnFailureListener(e -> {
+                binding.progressBar.setVisibility(View.GONE);
+                binding.buttonNext.setEnabled(true);
+                Toast.makeText(getContext(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
+    }
+
+    private void clearForm() {
+        binding.nameEditText.setText("");
+        binding.BuyingPEditText.setText("");
+        binding.SellingPEditText.setText("");
+        binding.unitsEditText.setText("");
+        binding.AdditionalEdiText.setText("");
+        binding.productImage.setImageResource(R.drawable.placeholder);
+        sendUri = null;
+    }
+}
 
 
 

@@ -97,7 +97,7 @@
                     android:inputType="number"
                     android:padding="10dp"
                     android:textColor="@color/black"
-                    android:textColorHint="@color/gray"
+                    android:textColorHint="#D5D5D5"
                     android:textSize="16sp" />
 
                 <TextView
@@ -120,7 +120,7 @@
                     android:inputType="number"
                     android:padding="10dp"
                     android:textColor="@color/black"
-                    android:textColorHint="@color/gray"
+                    android:textColorHint="#D5D5D5"
                     android:textSize="16sp" />
 
                 <TextView
@@ -166,7 +166,7 @@
                     android:minHeight="30dp"
                     android:padding="10dp"
                     android:textColor="@color/black"
-                    android:textColorHint="@color/gray"
+                    android:textColorHint="#D5D5D5"
                     android:textSize="16sp" />
 
                 <ProgressBar

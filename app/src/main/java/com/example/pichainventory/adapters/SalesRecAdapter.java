@@ -4,59 +4,50 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.example.pichainventory.Models.Sale;
 import com.example.pichainventory.R;
-import com.google.android.material.imageview.ShapeableImageView;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SalesRecAdapter extends RecyclerView.Adapter<SalesRecAdapter.ViewHolder> {
-
     private List<Sale> salesList;
-    private List<Sale> originalSales;
-    private Context mContext;
+    private List<Sale> originalList;
+    private Context context;
+    private OnItemClickListener listener;
     private int totalProfit = 0;
-    private int totalSp= 0;
-    private OnItemClickListener mListener;
+    private int totalSp = 0;
 
     public interface OnItemClickListener {
         void onItemClick(int position, Sale sale);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
-        mListener = listener;
+        this.listener = listener;
     }
 
-    public SalesRecAdapter(List<Sale> sales, Context context) {
-        salesList = sales;
-        mContext = context;
-        this.originalSales = new ArrayList<>(sales);
+    public SalesRecAdapter(List<Sale> salesList, Context context) {
+        this.salesList = salesList;
+        this.originalList = new ArrayList<>(salesList);
+        this.context = context;
+        calculateTotals();
+    }
 
-        // Calculate total profit and total SP
+    private void calculateTotals() {
+        totalProfit = 0;
+        totalSp = 0;
         for (Sale sale : salesList) {
             totalProfit += sale.getmProfit();
             totalSp += sale.getmSp();
         }
-    }
-
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.item, parent, false);
-        return new ViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Sale sale = salesList.get(position);
-        holder.bind(sale);
     }
 
     public int getTotalProfit() {
@@ -67,72 +58,86 @@ public class SalesRecAdapter extends RecyclerView.Adapter<SalesRecAdapter.ViewHo
         return totalSp;
     }
 
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_sales_rec, parent, false);
+        return new ViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Sale sale = salesList.get(position);
+        
+        // Set item name
+        holder.itemLabel.setText(sale.getmName());
+        
+        // Set price with currency symbol
+        holder.SellingPEditText.setText("Ksh " + sale.getmSp());
+        
+        // Set units with stock status
+        String unitsText = sale.getmUnits() + " units";
+        holder.UnitEditText.setText(unitsText);
+        holder.UnitEditText.setActivated(sale.getmUnits() == 0); // This will trigger the red border
+        
+        // Set additional info if available
+        if (sale.getmAddInfo() != null && !sale.getmAddInfo().isEmpty()) {
+            holder.AdditionalEdiText.setText(sale.getmAddInfo());
+            holder.AdditionalEdiText.setVisibility(View.VISIBLE);
+        } else {
+            holder.AdditionalEdiText.setVisibility(View.GONE);
+        }
+        
+        // Load image with placeholder and error handling
+        if (sale.getmImageUrl() != null && !sale.getmImageUrl().isEmpty()) {
+            Glide.with(context)
+                .load(sale.getmImageUrl())
+                .placeholder(R.drawable.placeholder)
+                .error(R.drawable.placeholder)
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .into(holder.profilePhoto);
+        } else {
+            holder.profilePhoto.setImageResource(R.drawable.placeholder);
+        }
+
+        // Set click listener
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onItemClick(position, sale);
+            }
+        });
+    }
+
     @Override
     public int getItemCount() {
         return salesList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView nameTextView;
-        TextView sPtextView;
-        ShapeableImageView profilePhoto;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            nameTextView = itemView.findViewById(R.id.nameTextView);
-            sPtextView = itemView.findViewById(R.id.sPtextView);
-            profilePhoto = itemView.findViewById(R.id.profilePhoto);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION && mListener != null) {
-                        Sale sale = salesList.get(position);
-                        mListener.onItemClick(position, sale);
-                    }
-                }
-            });
-
-//            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-//                @Override
-//                public boolean onLongClick(View v) {
-//                    int position = getAdapterPosition();
-//                    if (position != RecyclerView.NO_POSITION && mListener != null) {
-//                        Sale sale = salesList.get(position);
-//                        mListener.onItemLongClick(position, sale);
-//                        return true;
-//                    }
-//                    return false;
-//                }
-//            });
-        }
-
-        public void bind(Sale sale) {
-            nameTextView.setText(sale.getmName());
-            sPtextView.setText(String.valueOf(sale.getmProfit()));
-
-            Picasso.get()
-                    .load(sale.getmImageUrl())
-                    .placeholder(R.drawable.placeholder)
-                    .fit()
-                    .centerCrop()
-                    .into(profilePhoto);
-        }
-    }
-
-    public void filterSales(List<Sale> filteredSales) {
-        salesList.clear();
-        salesList.addAll(filteredSales);
+    public void filterSales(List<Sale> filteredList) {
+        salesList = filteredList;
         notifyDataSetChanged();
     }
 
     public void resetData() {
-        if (originalSales != null) {
-            this.salesList = new ArrayList<>(originalSales);
-        } else {
-            this.salesList = new ArrayList<>();
-        }
+        salesList = new ArrayList<>(originalList);
         notifyDataSetChanged();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView profilePhoto;
+        TextView itemLabel;
+        TextView SellingPEditText;
+        TextView UnitEditText;
+        TextView AdditionalEdiText;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            profilePhoto = itemView.findViewById(R.id.profilePhoto);
+            itemLabel = itemView.findViewById(R.id.itemLabel);
+            SellingPEditText = itemView.findViewById(R.id.SellingPEditText);
+            UnitEditText = itemView.findViewById(R.id.UnitEditText);
+            AdditionalEdiText = itemView.findViewById(R.id.AdditionalEdiText);
+        }
     }
 }

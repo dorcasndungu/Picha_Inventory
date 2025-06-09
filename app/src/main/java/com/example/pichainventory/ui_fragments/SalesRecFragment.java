@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +45,7 @@ import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -112,6 +114,8 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
     public int totalSp = 0;
     private String searchQuery = "";
     String uid;
+    private String highestProfitCategory = "";
+    private String highestSalesCategory = "";
     public SalesRecFragment() {
         // Required empty public constructor
     }
@@ -123,28 +127,22 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
         String currentDate = dateFormat.format(new Date());
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         assert user != null;
-        uid =user.getUid();
-        tDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("sales").child(currentDate).child("Toys");
-        fDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("sales").child(currentDate).child("Flowers");
-        bDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("sales").child(currentDate).child("Bedding");
-        shDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("sales").child(currentDate).child("Shoes");
-        btDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("sales").child(currentDate).child("Beauty");
-        clDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("sales").child(currentDate).child("Clothes");
-        decDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("sales").child(currentDate).child("Decor");
-        othDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("sales").child(currentDate).child("Other");
-        mDate=currentDate;
-
+        uid = user.getUid();
+        mDate = currentDate;
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentSalesRecBinding.inflate(inflater, container, false);
         View rootView = binding.getRoot();
 
+        // Initialize maps
         sectionVisibilityMap = new HashMap<>();
         sectionArrowIconMap = new HashMap<>();
         sectionRecyclerViewMap = new HashMap<>();
 
+        // Set up sections
         setupSection("flowers", R.id.flowersRecycler, R.id.arrowIcon, rootView);
         setupSection("toys", R.id.toysRecycler, R.id.TarrowIcon, rootView);
         setupSection("decoration", R.id.decorRecycler, R.id.DarrowIcon, rootView);
@@ -154,8 +152,127 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
         setupSection("beauty", R.id.beautyRecycler, R.id.BtarrowIcon, rootView);
         setupSection("clothes", R.id.clothesRecycler, R.id.CarrowIcon, rootView);
 
+        // Update database references to match the current structure
+        DatabaseReference salesRef = FirebaseDatabase.getInstance().getReference(uid).child("sales").child(mDate);
+        
+        // Set up listeners for each category
+        setupCategoryListener(salesRef, "Toys", "tSales", "tAdapter", binding.toysRecycler);
+        setupCategoryListener(salesRef, "Flowers", "fSales", "fAdapter", binding.flowersRecycler);
+        setupCategoryListener(salesRef, "Bedding", "bSales", "bAdapter", binding.beddingRecycler);
+        setupCategoryListener(salesRef, "Shoes", "shSales", "shAdapter", binding.shoesRecycler);
+        setupCategoryListener(salesRef, "Beauty", "btSales", "btAdapter", binding.beautyRecycler);
+        setupCategoryListener(salesRef, "Clothes", "clSales", "clAdapter", binding.clothesRecycler);
+        setupCategoryListener(salesRef, "Decor", "decSales", "decAdapter", binding.decorRecycler);
+        setupCategoryListener(salesRef, "Other", "othSales", "othAdapter", binding.otherRecycler);
+
         return rootView;
     }
+
+    private void setupCategoryListener(DatabaseReference salesRef, String category, String salesListName, String adapterName, RecyclerView recyclerView) {
+        salesRef.child(category).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<Sale> salesList = new ArrayList<>();
+                for (DataSnapshot timeSnapshot : dataSnapshot.getChildren()) {
+                    Sale sale = timeSnapshot.getValue(Sale.class);
+                    if (sale != null) {
+                        salesList.add(sale);
+                    }
+                }
+                
+                // Update the appropriate sales list and adapter
+                switch (salesListName) {
+                    case "tSales":
+                        tSales = salesList;
+                        toySales = salesList.size();
+                        tAdapter = new SalesRecAdapter(tSales, getContext());
+                        tAdapter.setOnItemClickListener(SalesRecFragment.this);
+                        toyProfit = tAdapter.getTotalProfit();
+                        toySp = tAdapter.getTotalSp();
+                        recyclerView.setAdapter(tAdapter);
+                        break;
+                    case "fSales":
+                        fSales = salesList;
+                        flowerSales = salesList.size();
+                        fAdapter = new SalesRecAdapter(fSales, getContext());
+                        fAdapter.setOnItemClickListener(SalesRecFragment.this);
+                        flowerProfit = fAdapter.getTotalProfit();
+                        flowerSp = fAdapter.getTotalSp();
+                        recyclerView.setAdapter(fAdapter);
+                        break;
+                    case "bSales":
+                        bSales = salesList;
+                        beddingSales = salesList.size();
+                        bAdapter = new SalesRecAdapter(bSales, getContext());
+                        bAdapter.setOnItemClickListener(SalesRecFragment.this);
+                        beddingProfit = bAdapter.getTotalProfit();
+                        beddingSp = bAdapter.getTotalSp();
+                        recyclerView.setAdapter(bAdapter);
+                        break;
+                    case "shSales":
+                        shSales = salesList;
+                        shoesSales = salesList.size();
+                        shAdapter = new SalesRecAdapter(shSales, getContext());
+                        shAdapter.setOnItemClickListener(SalesRecFragment.this);
+                        shoesProfit = shAdapter.getTotalProfit();
+                        shoesSp = shAdapter.getTotalSp();
+                        recyclerView.setAdapter(shAdapter);
+                        break;
+                    case "btSales":
+                        btSales = salesList;
+                        beautySales = salesList.size();
+                        btAdapter = new SalesRecAdapter(btSales, getContext());
+                        btAdapter.setOnItemClickListener(SalesRecFragment.this);
+                        beautyProfit = btAdapter.getTotalProfit();
+                        beautySp = btAdapter.getTotalSp();
+                        recyclerView.setAdapter(btAdapter);
+                        break;
+                    case "clSales":
+                        clSales = salesList;
+                        clotheSales = salesList.size();
+                        clAdapter = new SalesRecAdapter(clSales, getContext());
+                        clAdapter.setOnItemClickListener(SalesRecFragment.this);
+                        clothesProfit = clAdapter.getTotalProfit();
+                        clothesSp = clAdapter.getTotalSp();
+                        recyclerView.setAdapter(clAdapter);
+                        break;
+                    case "decSales":
+                        decSales = salesList;
+                        decorSales = salesList.size();
+                        decAdapter = new SalesRecAdapter(decSales, getContext());
+                        decAdapter.setOnItemClickListener(SalesRecFragment.this);
+                        decorProfit = decAdapter.getTotalProfit();
+                        decorSp = decAdapter.getTotalSp();
+                        recyclerView.setAdapter(decAdapter);
+                        break;
+                    case "othSales":
+                        othSales = salesList;
+                        otherSales = salesList.size();
+                        othAdapter = new SalesRecAdapter(othSales, getContext());
+                        othAdapter.setOnItemClickListener(SalesRecFragment.this);
+                        otherProfit = othAdapter.getTotalProfit();
+                        otherSp = othAdapter.getTotalSp();
+                        recyclerView.setAdapter(othAdapter);
+                        break;
+                }
+                
+                // Calculate totals
+                totalSales = toySales + flowerSales + beddingSales + shoesSales + beautySales + clotheSales + decorSales + otherSales;
+                totalProfit = toyProfit + flowerProfit + beddingProfit + shoesProfit + beautyProfit + clothesProfit + decorProfit + otherProfit;
+                totalSp = toySp + flowerSp + beddingSp + shoesSp + beautySp + clothesSp + decorSp + otherSp;
+                
+                // Update the display
+                calculateHighestProfitAndMostSoldCategories();
+                updateTotalDisplay();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     // Add this method to calculate and update the highest profit and most sold categories
     private void calculateHighestProfitAndMostSoldCategories() {
         Map<String, Integer> categoryProfitMap = new HashMap<>();
@@ -182,7 +299,7 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
 
         // Find the category with the highest profit
         int maxProfit = Integer.MIN_VALUE;
-        String highestProfitCategory = "";
+        highestProfitCategory = "";
         for (Map.Entry<String, Integer> entry : categoryProfitMap.entrySet()) {
             if (entry.getValue() > maxProfit) {
                 maxProfit = entry.getValue();
@@ -192,17 +309,28 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
 
         // Find the category with the most sold items
         int maxSales = Integer.MIN_VALUE;
-        String mostSoldCategory = "";
+        highestSalesCategory = "";
         for (Map.Entry<String, Integer> entry : categorySalesMap.entrySet()) {
             if (entry.getValue() > maxSales) {
                 maxSales = entry.getValue();
-                mostSoldCategory = entry.getKey();
+                highestSalesCategory = entry.getKey();
             }
         }
 
         // Update the UI with the highest profit and most sold categories
-        binding.highestPrft.setText("Most Profit: " + highestProfitCategory);
-        binding.highestSel.setText("Most Sold: " + mostSoldCategory);
+        if (isAdded()) {
+            if (highestProfitCategory.isEmpty()) {
+                binding.highestPrft.setText("No sales yet");
+            } else {
+                binding.highestPrft.setText("Most Profit: " + highestProfitCategory);
+            }
+
+            if (highestSalesCategory.isEmpty()) {
+                binding.highestSel.setText("No sales yet");
+            } else {
+                binding.highestSel.setText("Most Sold: " + highestSalesCategory);
+            }
+        }
     }
 
     private void setupSection(final String sectionName, int recyclerViewId, int arrowIconId, View rootView) {
@@ -260,260 +388,36 @@ public class SalesRecFragment extends Fragment implements SalesRecAdapter.OnItem
                 binding.progressBar.setVisibility(View.GONE);
             }
         }, 1000);
-        // Set up the FirebaseRecyclerAdapter
-        FirebaseRecyclerOptions<Sale> options =
-                new FirebaseRecyclerOptions.Builder<Sale>()
-                        .setQuery(tDatabaseRef, Sale.class)
-                        .build();
-
-        tDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                tSales.clear();
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    toySales = (int) dataSnapshot.getChildrenCount();
-                    Sale sale = postSnapshot.getValue(Sale.class);
-                    tSales.add(sale);
-
-                }
-
-                tAdapter = new SalesRecAdapter(tSales, getContext());
-                tAdapter.setOnItemClickListener(SalesRecFragment.this);
-                toyProfit = tAdapter.getTotalProfit();
-                toySp = tAdapter.getTotalSp();
-                binding.toysRecycler.setAdapter(tAdapter);
-                updateTotalDisplay();
-            }
-
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
-        // Set up the FirebaseRecyclerAdapter
-        FirebaseRecyclerOptions<Sale> flowersOptions =
-                new FirebaseRecyclerOptions.Builder<Sale>()
-                        .setQuery(fDatabaseRef, Sale.class)
-                        .build();
-
-        fDatabaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                flowerSales = (int) dataSnapshot.getChildrenCount();
-                List<Sale> newSales = new ArrayList<>();
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Sale sale = postSnapshot.getValue(Sale.class);
-                    newSales.add(sale);
-                }
-                fSales.clear();
-                fSales.addAll(newSales);
-                fAdapter = new SalesRecAdapter(fSales, getContext());
-                fAdapter.setOnItemClickListener(SalesRecFragment.this);
-                flowerProfit = fAdapter.getTotalProfit();
-                flowerSp = fAdapter.getTotalSp();
-                binding.flowersRecycler.setAdapter(fAdapter);
-                updateTotalDisplay();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Set up the beauty FirebaseRecyclerAdapter
-        FirebaseRecyclerOptions<Sale> beddingOptions =
-                new FirebaseRecyclerOptions.Builder<Sale>()
-                        .setQuery(bDatabaseRef, Sale.class)
-                        .build();
-
-        bDatabaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                beddingSales = (int) dataSnapshot.getChildrenCount();
-                bSales.clear();
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Sale sale = postSnapshot.getValue(Sale.class);
-                    bSales.add(sale);
-                }
-
-                bAdapter = new SalesRecAdapter(bSales, getContext());
-                bAdapter.setOnItemClickListener(SalesRecFragment.this);
-                binding.beddingRecycler.setAdapter(bAdapter);
-                beddingProfit = bAdapter.getTotalProfit();
-                beddingSp = bAdapter.getTotalSp();
-                updateTotalDisplay();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Set up the shoesRecyclerAdapter
-        FirebaseRecyclerOptions<Sale> shoesOptions =
-                new FirebaseRecyclerOptions.Builder<Sale>()
-                        .setQuery(shDatabaseRef, Sale.class)
-                        .build();
-
-        shDatabaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                shoesSales = (int) dataSnapshot.getChildrenCount();
-                shSales.clear();
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Sale sale = postSnapshot.getValue(Sale.class);
-                    shSales.add(sale);
-                }
-
-                shAdapter = new SalesRecAdapter(shSales, getContext());
-                shAdapter.setOnItemClickListener(SalesRecFragment.this);
-                binding.shoesRecycler.setAdapter(shAdapter);
-                shoesProfit = shAdapter.getTotalProfit();
-                shoesSp = shAdapter.getTotalSp();
-                updateTotalDisplay();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Set up the FirebaseRecyclerAdapter
-        FirebaseRecyclerOptions<Sale> beautyOptions =
-                new FirebaseRecyclerOptions.Builder<Sale>()
-                        .setQuery(btDatabaseRef, Sale.class)
-                        .build();
-
-        btDatabaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                beautySales = (int) dataSnapshot.getChildrenCount();
-                btSales.clear();
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Sale sale = postSnapshot.getValue(Sale.class);
-                    btSales.add(sale);
-                }
-
-                btAdapter = new SalesRecAdapter(btSales, getContext());
-                btAdapter.setOnItemClickListener(SalesRecFragment.this);
-                binding.beautyRecycler.setAdapter(btAdapter);
-                beautyProfit = btAdapter.getTotalProfit();
-                beautySp = btAdapter.getTotalSp();
-                updateTotalDisplay();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Set up the FirebaseRecyclerAdapter
-        FirebaseRecyclerOptions<Sale> clothesOptions =
-                new FirebaseRecyclerOptions.Builder<Sale>()
-                        .setQuery(clDatabaseRef, Sale.class)
-                        .build();
-
-        clDatabaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                clotheSales = (int) dataSnapshot.getChildrenCount();
-                clSales.clear();
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Sale sale = postSnapshot.getValue(Sale.class);
-                    clSales.add(sale);
-                }
-
-                clAdapter = new SalesRecAdapter(clSales, getContext());
-                clAdapter.setOnItemClickListener(SalesRecFragment.this);
-                binding.clothesRecycler.setAdapter(clAdapter);
-                clothesProfit = clAdapter.getTotalProfit();
-                clothesSp = clAdapter.getTotalSp();
-                updateTotalDisplay();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Set up the FirebaseRecyclerAdapter
-        FirebaseRecyclerOptions<Sale> decorOptions =
-                new FirebaseRecyclerOptions.Builder<Sale>()
-                        .setQuery(decDatabaseRef, Sale.class)
-                        .build();
-
-        decDatabaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                decorSales = (int) dataSnapshot.getChildrenCount();
-                decSales.clear();
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Sale sale = postSnapshot.getValue(Sale.class);
-                    decSales.add(sale);
-                }
-
-                decAdapter = new SalesRecAdapter(decSales, getContext());
-                decAdapter.setOnItemClickListener(SalesRecFragment.this);
-                binding.decorRecycler.setAdapter(decAdapter);
-                decorProfit = decAdapter.getTotalProfit();
-                decorSp = decAdapter.getTotalSp();
-                updateTotalDisplay();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Set up the FirebaseRecyclerAdapter
-        FirebaseRecyclerOptions<Sale> otherOptions =
-                new FirebaseRecyclerOptions.Builder<Sale>()
-                        .setQuery(othDatabaseRef, Sale.class)
-                        .build();
-
-        othDatabaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                otherSales = (int) dataSnapshot.getChildrenCount();
-                othSales.clear();
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Sale sale = postSnapshot.getValue(Sale.class);
-                    othSales.add(sale);
-                }
-
-                othAdapter = new SalesRecAdapter(othSales, getContext());
-                othAdapter.setOnItemClickListener(SalesRecFragment.this);
-                binding.otherRecycler.setAdapter(othAdapter);
-                otherProfit = othAdapter.getTotalProfit();
-                otherSp = othAdapter.getTotalSp();
-                updateTotalDisplay();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
         calculateHighestProfitAndMostSoldCategories();
     }
 
     private void updateTotalDisplay() {
-        totalSales=toySales+flowerSales+beddingSales+shoesSales+beautySales+clotheSales+decorSales+otherSales;
-        totalProfit=toyProfit+flowerProfit+beddingProfit+shoesProfit+beautyProfit+clothesProfit+decorProfit+otherProfit;
-        totalSp=toySp+flowerSp+beddingSp+shoesSp+beautySp+clothesSp+decorSp+otherSp;
-        binding.salesTextView.setText("Sales: " + totalSales);
-        binding.textViewProfit.setText(getString(R.string.profit) + totalProfit);
-        binding.textViewTotal.setText(getString(R.string.total) + totalSp);
-        binding.textViewDate.setText(getString(R.string.date) + mDate);
+        if (!isAdded()) return;
+        
+        try {
+            // Update the date display
+            binding.textViewDate.setText("Date: " + mDate);
+
+            // Update the sales, profit, and total displays
+            binding.salesTextView.setText(String.valueOf(totalSales));
+            binding.textViewProfit.setText(String.valueOf(totalProfit));
+            binding.textViewTotal.setText(String.valueOf(totalSp));
+
+            // Update the best performing category
+            if (highestProfitCategory != null && !highestProfitCategory.isEmpty()) {
+                binding.highestPrft.setText("Most Profit: " + highestProfitCategory);
+            } else {
+                binding.highestPrft.setText("No sales yet");
+            }
+
+            if (highestSalesCategory != null && !highestSalesCategory.isEmpty()) {
+                binding.highestSel.setText("Most Sold: " + highestSalesCategory);
+            } else {
+                binding.highestSel.setText("No sales yet");
+            }
+        } catch (Exception e) {
+            Log.e("SalesRecFragment", "Error updating display", e);
+        }
     }
 
 

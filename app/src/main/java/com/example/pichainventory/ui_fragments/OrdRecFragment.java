@@ -1,6 +1,7 @@
 package com.example.pichainventory.ui_fragments;
 
 import android.app.AlertDialog;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.annotation.NonNull;
@@ -17,6 +18,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -275,6 +279,7 @@ public class OrdRecFragment extends Fragment implements OrderAdapter.OnItemClick
         Button backButton = dialogView.findViewById(R.id.buttonBack);
         FloatingActionButton editBtn = dialogView.findViewById(R.id.editButton);
         FloatingActionButton deleteBtn = dialogView.findViewById(R.id.deleteButton);
+        RadioGroup radioGroup = dialogView.findViewById(R.id.radioGroup);
 
         // Retrieve data from the Bundle
         String itemName = bundle.getString("itemName");
@@ -284,12 +289,17 @@ public class OrdRecFragment extends Fragment implements OrderAdapter.OnItemClick
         String units = bundle.getString("mUnits");
         String desc = bundle.getString("descrptn");
         String contact = bundle.getString("contact");
+        String mKey = bundle.getString("mKey");
+        String mUid = bundle.getString("mUid");
 
         // Set values to the views
         itemLabel.setText(itemName);
         DescText.setText(desc);
         contactText.setText(contact);
         additionalText.setText(additional);
+        UnitsText.setText(units);
+        
+        // Load image
         Picasso.get()
                 .load(imageUrl)
                 .placeholder(R.drawable.placeholder)
@@ -297,17 +307,100 @@ public class OrdRecFragment extends Fragment implements OrderAdapter.OnItemClick
                 .centerCrop()
                 .into(displayPhoto);
 
-        UnitsText.setText(units);
-
         // Create and show the dialog
         AlertDialog dialog = builder.create();
         dialog.show();
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Close the dialog
-                dialog.dismiss();
+        // Set up back button
+        backButton.setOnClickListener(v -> dialog.dismiss());
+
+        // Set up delete button
+        deleteBtn.setOnClickListener(v -> {
+            new AlertDialog.Builder(getContext())
+                    .setTitle("Delete Order")
+                    .setMessage("Are you sure you want to delete this order?")
+                    .setPositiveButton("Yes", (dialogInterface, which) -> {
+                        // Delete the order from Firebase
+                        DatabaseReference orderRef = FirebaseDatabase.getInstance()
+                                .getReference(mUid)
+                                .child("Orders")
+                                .child(mCategory)
+                                .child(mKey);
+                        
+                        orderRef.removeValue()
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(getContext(), "Order deleted successfully", Toast.LENGTH_SHORT).show();
+                                    dialog.dismiss();
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(getContext(), "Failed to delete order: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+        });
+
+        // Set up edit button
+        editBtn.setOnClickListener(v -> {
+            // Enable editing of fields
+            DescText.setEnabled(true);
+            contactText.setEnabled(true);
+            additionalText.setEnabled(true);
+            UnitsText.setEnabled(true);
+            radioGroup.setEnabled(true);
+
+            // Check if save button already exists
+            LinearLayout layout = dialogView.findViewById(R.id.linearLayout);
+            Button existingSaveButton = dialogView.findViewById(R.id.saveButton);
+            
+            if (existingSaveButton == null) {
+                // Create save button only if it doesn't exist
+                Button saveButton = new Button(getContext());
+                saveButton.setId(R.id.saveButton); // Set the ID we defined in ids.xml
+                saveButton.setText("SAVE");
+                saveButton.setTypeface(null, Typeface.BOLD);
+                saveButton.setBackgroundResource(R.drawable.fields_round_corner);
+                
+                // Add save button to layout
+                layout.addView(saveButton);
+
+                // Set up save button click listener
+                saveButton.setOnClickListener(saveView -> {
+                    // Get updated values
+                    String updatedDesc = DescText.getText().toString();
+                    String updatedContact = contactText.getText().toString();
+                    String updatedAdditional = additionalText.getText().toString();
+                    String updatedUnits = UnitsText.getText().toString();
+                    
+                    // Get selected status
+                    int selectedRadioButtonId = radioGroup.getCheckedRadioButtonId();
+                    RadioButton selectedRadioButton = dialogView.findViewById(selectedRadioButtonId);
+                    String status = selectedRadioButton.getText().toString();
+
+                    // Create update map
+                    Map<String, Object> updates = new HashMap<>();
+                    updates.put("mDesc", updatedDesc);
+                    updates.put("mCont", updatedContact);
+                    updates.put("mAddInfo", updatedAdditional);
+                    updates.put("mUnits", Integer.parseInt(updatedUnits));
+                    updates.put("mStatus", status);
+
+                    // Update in Firebase with correct path
+                    DatabaseReference orderRef = FirebaseDatabase.getInstance()
+                            .getReference(mUid)
+                            .child("Orders")
+                            .child(mCategory)
+                            .child(mKey);
+
+                    orderRef.updateChildren(updates)
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(getContext(), "Order updated successfully", Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(getContext(), "Failed to update order: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
+                });
             }
         });
     }
@@ -322,6 +415,8 @@ public class OrdRecFragment extends Fragment implements OrderAdapter.OnItemClick
         bundle.putString("additional", order.getmAddInfo());
         bundle.putString("mCategory", order.getmCategory());
         bundle.putString("mUnits", String.valueOf(order.getmUnits()));
+        bundle.putString("mKey", order.getmKey());
+        bundle.putString("mUid", uid);
         showDialogWithItems(bundle);
     }
 

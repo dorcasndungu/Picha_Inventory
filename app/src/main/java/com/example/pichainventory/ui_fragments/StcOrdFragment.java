@@ -22,14 +22,12 @@ import com.example.pichainventory.CategoryAdapter;
 import com.example.pichainventory.Models.Order;
 import com.example.pichainventory.R;
 import com.example.pichainventory.databinding.FragmentStcordBinding;
+import com.example.pichainventory.utils.CloudinaryConfig;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -40,21 +38,21 @@ import java.util.Locale;
 
 public class StcOrdFragment extends Fragment {
     FragmentStcordBinding binding;
-    private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
+    public String ItemName;
+    public String ImageUrl;
+    public String Category;
+    public String uid;
     private Uri sendUri;
-    private String ItemName;
-    private String ImageUrl;
-    private String Category;
-    private String uid;
-    private boolean isNewOrder = false;
+    private boolean isNewOrder = true;
 
     public StcOrdFragment() {
         // Required empty public constructor
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         binding = FragmentStcordBinding.inflate(inflater, container, false);
         View rootView = binding.getRoot();
         List<String> categories = Arrays.asList("Toys", "Flowers", "Bedding", "Shoes", "Beauty", "Baby", "Clothes", "Decor", "Other");
@@ -70,7 +68,7 @@ public class StcOrdFragment extends Fragment {
                 throw new IllegalArgumentException("UID must not be null or empty");
             }
 
-            mStorageRef = FirebaseStorage.getInstance().getReference(uid).child("Orders");
+            mDatabaseRef = FirebaseDatabase.getInstance().getReference(uid).child("Orders").child(Category);
 
             if (!isNewOrder) {
                 String itemName = args.getString("itemName");
@@ -158,15 +156,17 @@ public class StcOrdFragment extends Fragment {
     }
 
     private boolean isFormValid() {
-        return isNameValid() && isDescValid() && isContactValid() && isImageSelected();
+        return isNameValid() && isDescValid() && isContactValid() && isUnitsValid() && (isNewOrder ? isImageSelected() : true);
     }
+
     private boolean isImageSelected() {
-        if (sendUri == null) {
+        if (sendUri == null && isNewOrder) {
             Toast.makeText(getContext(), "Please select an image", Toast.LENGTH_LONG).show();
             return false;
         }
         return true;
     }
+
     private boolean isNameValid() {
         String name = binding.nameLabel.getText().toString().trim();
         return !TextUtils.isEmpty(name);
@@ -196,29 +196,21 @@ public class StcOrdFragment extends Fragment {
 
     private void uploadFile() {
         String uploadId = mDatabaseRef.push().getKey(); // Generate unique key for new orders
-        StorageReference fileReference = mStorageRef.child(uploadId)
-                .child(System.currentTimeMillis() + "." + getFileExtension(sendUri));
+        
+        // Upload to Cloudinary
+        CloudinaryConfig.uploadImage(requireContext(), sendUri, new CloudinaryConfig.CloudinaryCallback() {
+            @Override
+            public void onSuccess(String cloudinaryUrl) {
+                ImageUrl = cloudinaryUrl;
+                saveOrderToDatabase(uploadId);
+            }
 
-        fileReference.putFile(sendUri)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                ImageUrl = uri.toString();
-                                saveOrderToDatabase(uploadId);
-                            }
-                        });
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getContext(), "Failed to upload image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        hideProgress();
-                    }
-                });
+            @Override
+            public void onError(String error) {
+                Toast.makeText(getContext(), "Failed to upload image: " + error, Toast.LENGTH_SHORT).show();
+                hideProgress();
+            }
+        });
     }
 
     private void saveOrderToDatabase() {
@@ -230,9 +222,12 @@ public class StcOrdFragment extends Fragment {
         ItemName = binding.nameLabel.getText().toString().trim();
         Category = binding.spinner.getSelectedItem().toString();
 
+        // If we have a new image, use that, otherwise use the existing one
+        String finalImageUrl = (sendUri != null) ? ImageUrl : ImageUrl;
+
         Order order = new Order(
                 ItemName,
-                ImageUrl,
+                finalImageUrl,
                 binding.DescEditText.getText().toString().trim(),
                 binding.ContactEditText.getText().toString().trim(),
                 Integer.parseInt(binding.UnitEditText.getText().toString().trim()),

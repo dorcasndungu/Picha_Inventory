@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
@@ -13,4 +14,11 @@
         android:title="Account"
         app:showAsAction="ifRoom|collapseActionView"
         android:onClick="logout" />
+
+    <item
+        android:id="@+id/action_export_logs"
+        android:title="Export Logs"
+        android:icon="@drawable/ic_logs"
+        app:showAsAction="never"
+        android:textColor="#FFFFFF" />
 </menu>

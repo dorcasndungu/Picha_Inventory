@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:id="@+id/orderdialog"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-android:background="@color/black"
+    android:background="@color/black"
     android:layout_height="wrap_content">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -14,7 +14,6 @@ android:background="@color/black"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0">
@@ -64,7 +63,7 @@ android:background="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <TextView
+                <EditText
                     android:id="@+id/DescTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -86,7 +85,7 @@ android:background="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <TextView
+                <EditText
                     android:id="@+id/UnitTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -94,7 +93,9 @@ android:background="@color/black"
                     android:text="unit"
                     android:textColor="@color/white"
                     android:textColorHint="#52FFFFFF"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:enabled="false"
+                    android:background="@null" />
                 <TextView
                     android:id="@+id/StatusLabel"
                     android:layout_width="match_parent"
@@ -110,6 +111,7 @@ android:background="@color/black"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:orientation="horizontal"
+                    android:enabled="false"
                     app:layout_constraintStart_toStartOf="@+id/sPtextView"
                     app:layout_constraintTop_toBottomOf="@+id/nameTextView"
                     >
@@ -143,7 +145,7 @@ android:background="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <TextView
+                <EditText
                     android:id="@+id/ContactTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -151,7 +153,9 @@ android:background="@color/black"
                     android:text="contact"
                     android:textColor="@color/white"
                     android:textColorHint="#52FFFFFF"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:enabled="false"
+                    android:background="@null" />
 
                 <TextView
                     android:id="@+id/AdditionalInfoLabel"
@@ -163,7 +167,7 @@ android:background="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <TextView
+                <EditText
                     android:id="@+id/AdditionalEdiText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -173,7 +177,9 @@ android:background="@color/black"
                     android:text="additional info"
                     android:textColor="@color/white"
                     android:textColorHint="#52FFFFFF"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:enabled="false"
+                    android:background="@null" />
 
                 <Button
                     android:id="@+id/buttonBack"
